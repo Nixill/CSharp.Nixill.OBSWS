@@ -18,7 +18,7 @@ public partial class OBSClient
   public bool IsConnected { get; private set; } = false;
   public bool IsIdentified { get; private set; } = false;
 
-  public OBSClient(string ip, int port = 4455, string password = "", EventSubscription subs = EventSubscription.All, ILogger? logger = null)
+  public OBSClient(string ip, int port = 4455, string password = "", EventSubscription subs = EventSubscription.All, ILoggerFactory loggerFactory = null)
   {
     Uri uri = new($"ws://{ip}:{port}/");
 
@@ -28,7 +28,7 @@ public partial class OBSClient
     Client.DisconnectionHappened.Subscribe(InvokeDisconnect);
 
     Password = password;
-    Logger = logger;
+    Logger = loggerFactory?.CreateLogger(typeof(OBSClient));
     EventSubscriptions = subs;
   }
 
