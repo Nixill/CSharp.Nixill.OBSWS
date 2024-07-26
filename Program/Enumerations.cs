@@ -173,3 +173,108 @@ public enum SubscriptionRequired
   StudioModeStateChanged = EventSubscription.Ui,
   ScreenshotSaved = EventSubscription.Ui
 }
+
+public enum OBSMediaInputAction
+{
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
+  None,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
+  Play,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
+  Pause,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
+  Stop,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
+  Restart,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
+  Next,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
+  Previous
+}
+
+public static class OBSMediaInputActions
+{
+  public static string GetIdentifierValue(this OBSMediaInputAction action)
+    => StringValueAttribute.GetValue(action);
+
+  public static OBSMediaInputAction ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<OBSMediaInputAction>(value);
+}
+
+public enum OBSOutputState
+{
+  [StringValue("OBS_WEBSOCKET_OUTPUT_UNKNOWN")]
+  Unknown,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STARTING")]
+  Starting,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STARTED")]
+  Started,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STOPPING")]
+  Stopping,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STOPPED")]
+  Stopped,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_RECONNECTING")]
+  Reconnecting,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_RECONNECTED")]
+  Reconnected,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_PAUSED")]
+  Paused,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_RESUMED")]
+  Resumed
+}
+
+public static class OBSOutputStates
+{
+  public static string GetIdentifierValue(this OBSOutputState action)
+    => StringValueAttribute.GetValue(action);
+
+  public static OBSOutputState ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<OBSOutputState>(value);
+}
+
+public class StringValueAttribute : Attribute
+{
+  public string Value { get; init; }
+
+  public StringValueAttribute(string val) => Value = val;
+
+  public static string GetValue<T>(T input) where T : System.Enum
+  {
+    try
+    {
+      return (typeof(T)
+        .GetField(input.ToString()) ?? throw new InvalidCastException($"No enum constant exists for ({typeof(T).Name}){input.ToString()}"))
+        .GetCustomAttributes(typeof(StringValueAttribute), false)
+        .Cast<StringValueAttribute>()
+        .Single()
+        .Value;
+    }
+    catch (InvalidOperationException ex)
+    {
+      if (ex.Message == "Sequence contains no elements") throw new InvalidOperationException($"No StringValueAttribute exists on {typeof(T).Name}.{input.ToString()}");
+      else throw;
+    }
+  }
+
+  public static T FindValue<T>(string input) where T : System.Enum
+  {
+    try
+    {
+      return (T)(typeof(T)
+        .GetFields()
+        .Where(f => f
+          .GetCustomAttributes(typeof(StringValueAttribute), false)
+          .Cast<StringValueAttribute>()
+          .Where(v => v.Value == input)
+          .Any()
+        ).Single()
+        .GetValue(null))!;
+    }
+    catch (InvalidOperationException ex)
+    {
+      if (ex.Message == "Sequence contains no elements") throw new InvalidOperationException($"No StringValueAttribute with a value of {input} exists on a(n) {typeof(T).Name} constant.");
+      else if (ex.Message == "Sequence contains more than one element") throw new InvalidOperationException($"Multiple {typeof(T).Name} constants have a StringValueAttribute with a value of {input}.");
+      else throw;
+    }
+  }
+}

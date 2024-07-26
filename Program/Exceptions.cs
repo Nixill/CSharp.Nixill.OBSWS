@@ -21,3 +21,13 @@ public class RequestTimedOutException : Exception
     Guid = guid;
   }
 }
+
+public class MissingFieldException : Exception
+{
+  public readonly string Field;
+
+  public MissingFieldException(string field) : base($"Missing required field '{field}'")
+  {
+    Field = field;
+  }
+}

@@ -18,26 +18,36 @@ public partial class OBSClient
   public bool IsConnected { get; private set; } = false;
   public bool IsIdentified { get; private set; } = false;
 
-  public OBSClient(string ip, int port = 4455, string password = "", EventSubscription subs = EventSubscription.All, ILoggerFactory loggerFactory = null)
+  public OBSClient(string ip, int port = 4455, string password = "", EventSubscription subs = EventSubscription.All, ILoggerFactory? loggerFactory = null)
   {
     Uri uri = new($"ws://{ip}:{port}/");
 
     Client = new WebsocketClient(uri);
     Client.ReconnectTimeout = TimeSpan.FromSeconds(15);
-    Client.MessageReceived.Subscribe(Dispatch);
+    Client.MessageReceived.Subscribe(msg => Task.Run(() => Dispatch(msg)));
     Client.DisconnectionHappened.Subscribe(InvokeDisconnect);
 
     Password = password;
     Logger = loggerFactory?.CreateLogger(typeof(OBSClient));
     EventSubscriptions = subs;
+
+    Events = new(this);
   }
 
-  public Task Connect()
-    => Client.StartOrFail();
+  public async Task Connect()
+  {
+    await Client.StartOrFail();
+    IsConnected = true;
+  }
 
   public Task<bool> Disconnect() => Disconnect(WebSocketCloseStatus.Empty, "");
-  public Task<bool> Disconnect(WebSocketCloseStatus code, string description)
-    => Client.StopOrFail(code, description);
+  public async Task<bool> Disconnect(WebSocketCloseStatus code, string description)
+  {
+    bool success = await Client.StopOrFail(code, description);
+    IsConnected = false;
+    IsIdentified = false;
+    return success;
+  }
 
   public Task Reidentify(EventSubscription newSubs)
   {
@@ -69,7 +79,7 @@ public partial class OBSClient
     IsIdentified = false;
   }
 
-  private void Dispatch(ResponseMessage msg)
+  private async Task Dispatch(ResponseMessage msg)
   {
     JsonObject response = (JsonObject)JsonNode.Parse(msg.Text!)!;
     OpCode opcode = (OpCode)(int)response["op"]!;
@@ -84,7 +94,7 @@ public partial class OBSClient
         Logger?.LogInformation("Successfully identified.");
         IsIdentified = true; break;
       case OpCode.Event:
-        HandleEvent(data); break;
+        await Events.Handle(data); break;
       case OpCode.RequestResponse:
         HandleResponse(data); break;
       case OpCode.RequestBatchResponse:
