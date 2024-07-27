@@ -13,20 +13,35 @@ public static partial class OBSRequests
     public static OBSRequest<CurrentScene> GetCurrentProgramScene()
       => new OBSRequest<CurrentScene>
       {
-        CastResult = d => new CurrentScene(d),
         RequestType = "GetCurrentProgramScene"
       };
 
-    // SetCurrentProgramScene
+    public static OBSVoidRequest SetCurrentProgramScene(ID sceneID)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetCurrentProgramScene",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value
+        }
+      };
 
     public static OBSRequest<CurrentScene> GetCurrentPreviewScene()
       => new OBSRequest<CurrentScene>
       {
-        CastResult = d => new CurrentScene(d),
         RequestType = "GetCurrentPreviewScene"
       };
 
-    // SetCurrentPreviewScene
+    public static OBSVoidRequest SetCurrentPreviewScene(ID sceneID)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetCurrentPreviewScene",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value
+        }
+      };
+
     // CreateScene
     // RemoveScene
     // SetSceneName
@@ -39,16 +54,9 @@ public static partial class OBSRequests
 // have their call-specific return fields in a future RPC version.
 public class CurrentScene : OBSRequestResult
 {
-  public required string Name { get; init; }
-  public required string Uuid { get; init; }
-  public Guid Guid => Guid.Parse(Uuid);
+  public required string SceneName { get; init; }
+  public required string SceneUuid { get; init; }
+  public Guid Guid => Guid.Parse(SceneUuid);
 
   public CurrentScene() { }
-
-  [SetsRequiredMembers]
-  public CurrentScene(JsonObject obj) : base(obj)
-  {
-    Name = (string)GetRequiredNode("sceneName")!;
-    Uuid = (string)GetRequiredNode("sceneUuid")!;
-  }
 }

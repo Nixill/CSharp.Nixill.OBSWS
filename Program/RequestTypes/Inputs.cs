@@ -15,24 +15,23 @@ public static partial class OBSRequests
     // SetInputName
     // GetInputDefaultSettings
 
-    public static OBSRequest<InputSettingsResponse> GetInputSettings(ID inputID)
+    public static OBSRequest<InputSettingsResponse> GetInputSettings(ID inputId)
       => new OBSRequest<InputSettingsResponse>
       {
-        CastResult = j => new InputSettingsResponse(j),
         RequestType = "GetInputSettings",
         RequestData = new JsonObject
         {
-          [$"input{inputID.Key}"] = inputID.Value
+          [$"input{inputId.Key}"] = inputId.Value
         }
       };
 
-    public static OBSVoidRequest SetInputSettings(ID inputID, JsonObject inputSettings, bool overlay = true)
+    public static OBSVoidRequest SetInputSettings(ID inputId, JsonObject inputSettings, bool overlay = true)
       => new OBSVoidRequest
       {
         RequestType = "SetInputSettings",
         RequestData = new JsonObject
         {
-          [$"input{inputID.Key}"] = inputID.Value,
+          [$"input{inputId.Key}"] = inputId.Value,
           ["inputSettings"] = inputSettings,
           ["overlay"] = overlay
         }
@@ -62,11 +61,4 @@ public class InputSettingsResponse : OBSRequestResult
   public required string InputKind { get; init; }
 
   public InputSettingsResponse() : base() { }
-
-  [SetsRequiredMembers]
-  public InputSettingsResponse(JsonObject obj) : base(obj)
-  {
-    InputSettings = (JsonObject)GetRequiredNode("inputSettings");
-    InputKind = (string)GetRequiredNode("inputKind")!;
-  }
 }

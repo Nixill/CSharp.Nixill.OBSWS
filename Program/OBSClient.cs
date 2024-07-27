@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Websocket.Client;
@@ -143,4 +144,12 @@ public class OBSDisconnectedArgs : EventArgs
     Code = (WebSocketCloseCode?)info.CloseStatus ?? WebSocketCloseCode.UnknownReason;
     Comment = info.CloseStatusDescription;
   }
+}
+
+internal static class JsonSerializerOptionProvider
+{
+  internal static readonly JsonSerializerOptions Options = new JsonSerializerOptions
+  {
+    PropertyNameCaseInsensitive = true
+  };
 }

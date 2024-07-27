@@ -232,6 +232,100 @@ public static class OBSOutputStates
     => StringValueAttribute.FindValue<OBSOutputState>(value);
 }
 
+public enum SceneItemBlendMode
+{
+  [StringValue("OBS_BLEND_NORMAL")]
+  Normal,
+  [StringValue("OBS_BLEND_ADDITIVE")]
+  Additive,
+  [StringValue("OBS_BLEND_SUBTRACT")]
+  Subtract,
+  [StringValue("OBS_BLEND_SCREEN")]
+  Screen,
+  [StringValue("OBS_BLEND_MULTIPLY")]
+  Multiply,
+  [StringValue("OBS_BLEND_LIGHTEN")]
+  Lighten,
+  [StringValue("OBS_BLEND_DARKEN")]
+  Darken
+}
+
+public static class SceneItemBlendModes
+{
+  public static string GetIdentifierValue(this SceneItemBlendMode mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static SceneItemBlendMode ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<SceneItemBlendMode>(value);
+}
+
+public enum BoundingBoxType
+{
+  [StringValue("OBS_BOUNDS_NONE")]
+  NoBounds,
+  [StringValue("OBS_BOUNDS_STRETCH")]
+  StretchToBounds,
+  [StringValue("OBS_BOUNDS_SCALE_INNER")]
+  ScaleToInnerBounds,
+  [StringValue("OBS_BOUNDS_SCALE_OUTER")]
+  ScaleToOuterBounds,
+  [StringValue("OBS_BOUNDS_SCALE_TO_WIDTH")]
+  ScaleToWidthOfBounds,
+  [StringValue("OBS_BOUNDS_SCALE_TO_HEIGHT")]
+  ScaleToHeightOfBounds,
+  [StringValue("OBS_BOUNDS_MAX_ONLY")]
+  MaximumSizeOnly
+}
+
+public static class BoundingBoxTypes
+{
+  public static string GetIdentifierValue(this BoundingBoxType mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static BoundingBoxType ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<BoundingBoxType>(value);
+}
+
+public enum SourceType
+{
+  [StringValue("OBS_SOURCE_TYPE_INPUT")]
+  Input,
+  [StringValue("OBS_SOURCE_TYPE_SCENE")]
+  Scene,
+  [StringValue("OBS_SOURCE_TYPE_FILTER")]
+  Filter,
+  [StringValue("OBS_SOURCE_TYPE_TRANSITION")]
+  Transition
+}
+
+public static class SourceTypes
+{
+  public static string GetIdentifierValue(this SourceType mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static SourceType ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<SourceType>(value);
+}
+
+public enum MonitoringType
+{
+  [StringValue("OBS_MONITORING_TYPE_NONE")]
+  None,
+  [StringValue("OBS_MONITORING_TYPE_MONITOR_ONLY")]
+  MonitorOnlyMuteOutput,
+  [StringValue("OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT")]
+  MonitorAndOutput
+}
+
+public static class MonitoringTypes
+{
+  public static string GetIdentifierValue(this MonitoringType mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static MonitoringType ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<MonitoringType>(value);
+}
+
 public class StringValueAttribute : Attribute
 {
   public string Value { get; init; }

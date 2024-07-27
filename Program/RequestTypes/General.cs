@@ -10,7 +10,6 @@ public static partial class OBSRequests
     public static OBSRequest<OBSVersionInfo> GetVersion()
       => new OBSRequest<OBSVersionInfo>
       {
-        CastResult = d => new OBSVersionInfo(d),
         RequestType = "GetVersion"
       };
 
@@ -35,18 +34,6 @@ public class OBSVersionInfo : OBSRequestResult
   public required string PlatformDescription { get; init; }
 
   public OBSVersionInfo() { }
-
-  [SetsRequiredMembers]
-  public OBSVersionInfo(JsonObject obj) : base(obj)
-  {
-    OBSVersion = (string)GetRequiredNode("obsVersion")!;
-    OBSWebSocketVersion = (string)GetRequiredNode("obsWebSocketVersion")!;
-    RPCVersion = (int)GetRequiredNode("rpcVersion");
-    AvailableRequests = ((JsonArray)GetRequiredNode("availableRequests")).Select(x => (string)x!).ToArray();
-    SupportedImageFormats = ((JsonArray)GetRequiredNode("supportedImageFormats")).Select(x => (string)x!).ToArray();
-    Platform = (string)GetRequiredNode("platform")!;
-    PlatformDescription = (string)GetRequiredNode("platformDescription")!;
-  }
 }
 
 public struct ID
