@@ -94,34 +94,65 @@ public partial class OBSClient
 
   // TODO make improvements to this, including allowing OBSRequest[] and
   // updating timeout for Sleeps
-  public Task SendBatchRequest(JsonArray batchData, bool haltOnFailure = false,
+  public Task<OBSBatchRequestResult> SendBatchRequest(IEnumerable<OBSRequest> batchData, bool haltOnFailure = false,
     RequestBatchExecutionType executionType = RequestBatchExecutionType.SerialRealtime, int timeout = 15)
   {
+    int millisTimeout = batchData
+      .Where(r => r.RequestType == "Sleep")
+      .Select(r => (int?)r.RequestData?["sleepMillis"] ?? 0)
+      .Sum();
+    int framesTimeout = batchData
+      .Where(r => r.RequestType == "Sleep")
+      .Select(r => (int?)r.RequestData?["sleepFrames"] ?? 0)
+      .Sum();
+
     string id = Guid.NewGuid().ToString();
-    TaskCompletionSource<JsonObject> dataTask = new();
+    TaskCompletionSource<JsonArray> dataTask = new();
     JsonObject request = new JsonObject
     {
-      ["op"] = (int)OpCode.Request,
+      ["op"] = (int)OpCode.RequestBatch,
       ["d"] = new JsonObject
       {
         ["requestId"] = id,
         ["haltOnFailure"] = haltOnFailure,
         ["executionType"] = (int)executionType,
-        ["requests"] = batchData
+        ["requests"] = new JsonArray(batchData.Select(r => r.ToJson()).ToArray())
       }
     };
 
-    WaitingResponses[id] = dataTask;
+    WaitingBatchResponses[id] = dataTask;
     Client.Send(request.ToString());
 
-    if (dataTask.Task.Wait(30_000))
+    if (dataTask.Task.Wait(TimeSpan.FromSeconds(timeout) + TimeSpan.FromMilliseconds(millisTimeout)
+      + TimeSpan.FromSeconds(framesTimeout / 30)))
     {
-      return Task.FromResult(dataTask.Task.Result);
+      return Task.FromResult(new OBSBatchRequestResult(dataTask.Task.Result));
     }
     else
     {
       throw new RequestTimedOutException(id);
     }
+  }
+
+  public void SendBatchRequestWithoutWaiting(IEnumerable<OBSRequest> batchData, bool haltOnFailure = false,
+    RequestBatchExecutionType executionType = RequestBatchExecutionType.SerialRealtime)
+  {
+    string id = Guid.NewGuid().ToString();
+    TaskCompletionSource<JsonArray> dataTask = new();
+    JsonObject request = new JsonObject
+    {
+      ["op"] = (int)OpCode.RequestBatch,
+      ["d"] = new JsonObject
+      {
+        ["requestId"] = id,
+        ["haltOnFailure"] = haltOnFailure,
+        ["executionType"] = (int)executionType,
+        ["requests"] = new JsonArray(batchData.Select(r => r.ToJson()).ToArray())
+      }
+    };
+
+    WaitingBatchResponses[id] = dataTask;
+    Client.Send(request.ToString());
   }
 
   public void HandleBatchResponse(JsonObject data)
@@ -206,41 +237,4 @@ public class OBSVoidRequest : OBSRequest
   public OBSVoidRequest(string requestType, JsonObject? requestData = null, string? requestID = null)
     : base(requestType, requestData, requestID)
   { }
-}
-
-public class OBSRequestResult
-{
-  public JsonObject? ResponseData { get; init; } = null;
-
-  public OBSRequestResult() { }
-
-  public OBSRequestResult(JsonObject result)
-  {
-    ResponseData = result;
-  }
-
-  [return: NotNull]
-  protected JsonNode GetRequiredNode(string node)
-  {
-    return ResponseData![node] ?? throw new MissingFieldException(node);
-  }
-}
-
-public class OBSSingleValueResult<T> : OBSRequestResult
-{
-  public required T Result { get; init; }
-
-  [SetsRequiredMembers]
-  public OBSSingleValueResult(JsonObject obj, Func<JsonNode, T> cast) : base(obj)
-  {
-    Result = cast(obj.Single().Value!);
-  }
-
-  [SetsRequiredMembers]
-  public OBSSingleValueResult(JsonObject obj, string key, Func<JsonNode, T> cast) : base(obj)
-  {
-    Result = cast(obj[key] ?? throw new MissingFieldException(obj.Single().Key));
-  }
-
-  public static implicit operator T(OBSSingleValueResult<T> result) => result.Result;
 }

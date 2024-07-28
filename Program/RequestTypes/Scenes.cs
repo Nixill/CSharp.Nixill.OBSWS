@@ -17,7 +17,15 @@ public static partial class OBSRequests
         RequestType = "GetCurrentProgramScene"
       };
 
-    // SetCurrentProgramScene
+    public static OBSVoidRequest SetCurrentProgramScene(ID sceneID)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetCurrentProgramScene",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value
+        }
+      };
 
     public static OBSRequest<CurrentScene> GetCurrentPreviewScene()
       => new OBSRequest<CurrentScene>
@@ -26,7 +34,16 @@ public static partial class OBSRequests
         RequestType = "GetCurrentPreviewScene"
       };
 
-    // SetCurrentPreviewScene
+    public static OBSVoidRequest SetCurrentPreviewScene(ID sceneID)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetCurrentPreviewScene",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value
+        }
+      };
+
     // CreateScene
     // RemoveScene
     // SetSceneName
