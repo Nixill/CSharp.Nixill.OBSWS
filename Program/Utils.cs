@@ -2,8 +2,14 @@ using System.Text.Json.Nodes;
 
 namespace Nixill.OBSWS;
 
-public static class Utils
+internal static class Utils
 {
-  public static JsonNode GetNode(this JsonObject obj, string key)
+  internal static JsonNode GetNode(this JsonObject obj, string key)
     => obj[key] ?? throw new MissingFieldException(key);
+
+  internal static IDictionary<K, V> WithValueIf<K, V>(this IDictionary<K, V> input, K key, V value, bool condition)
+  {
+    if (condition) input[key] = value;
+    return input;
+  }
 }

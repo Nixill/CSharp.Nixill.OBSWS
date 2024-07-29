@@ -10,7 +10,7 @@ public static partial class OBSRequests
     public static OBSRequest<StreamStatus> GetStreamStatus()
       => new OBSRequest<StreamStatus>
       {
-        CastResult = obj => new StreamStatus(obj),
+        CastResult = (r, o) => new StreamStatus(r, o),
         RequestType = "GetStreamStatus"
       };
 
@@ -59,7 +59,7 @@ public class StreamStatus : OBSRequestResult
   public StreamStatus() { }
 
   [SetsRequiredMembers]
-  public StreamStatus(JsonObject obj) : base(obj)
+  public StreamStatus(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     Active = (bool)obj.GetNode("outputActive");
     Reconnecting = (bool)obj.GetNode("outputReconnecting");

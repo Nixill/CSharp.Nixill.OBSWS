@@ -23,7 +23,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<string>> GetRecordDirectory()
       => new OBSRequest<OBSSingleValueResult<string>>
       {
-        CastResult = OBSSingleValueResult<string>.CastFunc(n => (string)n!),
+        CastResult = OBSSingleValueResult<string>.CastFunc(x => (string)x!),
         RequestType = "GetRecordDirectory"
       };
 

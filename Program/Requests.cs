@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 
@@ -7,20 +9,21 @@ namespace Nixill.OBSWS;
 
 public partial class OBSClient
 {
-  static ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> WaitingResponses = new();
+  static ConcurrentDictionary<string, OBSRequestCompletionSource> WaitingResponses = new();
 
-  public Task<OBSRequestResult> SendRequest(OBSRequest requestD, int timeout = 30)
+  public async Task<OBSRequestResult> SendRequest(OBSRequest request, int timeout = 30)
   {
-    string id = requestD.RequestID;
-    TaskCompletionSource<JsonObject> dataTask = new();
-    JsonObject request = new JsonObject
+    await Task.Delay(0);
+    string id = request.RequestID;
+    TaskCompletionSource<OBSRequestResponse> dataTask = new();
+    JsonObject jsonRequest = new JsonObject
     {
       ["op"] = (int)OpCode.Request,
-      ["d"] = requestD.ToJson()
+      ["d"] = request.ToJson()
     };
 
-    WaitingResponses[id] = dataTask;
-    Client.Send(request.ToString());
+    WaitingResponses[id] = new() { OriginalRequest = request, ResponseCompletionSource = dataTask };
+    Client.Send(jsonRequest.ToString());
 
     if (timeout == -1)
     {
@@ -30,11 +33,13 @@ public partial class OBSClient
 
     if (dataTask.Task.Wait(TimeSpan.FromSeconds(timeout)))
     {
-      return Task.FromResult(requestD.ParseResult(dataTask.Task.Result));
+      OBSRequestResponse response = dataTask.Task.Result;
+      if (response.RequestSuccessful) return response.RequestResult!;
+      else throw new RequestFailedException(request, response.RequestStatusCode, response.RequestComment);
     }
     else
     {
-      throw new RequestTimedOutException(id);
+      throw new RequestTimedOutException(request);
     }
   }
 
@@ -44,19 +49,19 @@ public partial class OBSClient
   public Task<OBSRequestResult> SendRequest(string requestType, JsonObject requestData, int timeout = 30)
     => SendRequest(new OBSRequest(requestType, requestData), timeout);
 
-  public Task SendRequestWithoutWaiting(OBSRequest requestD)
+  public Task SendRequestWithoutWaiting(OBSRequest request)
   {
-    string id = requestD.RequestID;
-    JsonObject request = new JsonObject
+    string id = request.RequestID;
+    JsonObject requestJson = new JsonObject
     {
       ["op"] = (int)OpCode.Request,
-      ["d"] = requestD.ToJson()
+      ["d"] = request.ToJson()
     };
 
     // I'm still adding to the WaitingResponses list so that there isn't
     // a complaint of "received a response with an unqueued ID".
-    WaitingResponses[id] = new();
-    Client.Send(request.ToString());
+    WaitingResponses[id] = new OBSRequestCompletionSource() { OriginalRequest = request, ResponseCompletionSource = new() };
+    Client.Send(requestJson.ToString());
 
     return Task.CompletedTask;
   }
@@ -64,24 +69,17 @@ public partial class OBSClient
   void HandleResponse(JsonObject data)
   {
     string requestId = (string)data["requestId"]!;
-    JsonObject requestStatus = (JsonObject)data["requestStatus"]!;
-    bool isSuccessful = (bool)requestStatus["result"]!;
+    // JsonObject requestStatus = (JsonObject)data["requestStatus"]!;
+    // bool isSuccessful = (bool)requestStatus["result"]!;
 
     if (WaitingResponses.ContainsKey(requestId))
     {
-      var response = WaitingResponses[requestId];
-      WaitingResponses.TryRemove(new(requestId, response));
-      if (isSuccessful)
-      {
-        JsonObject responseData = (JsonObject)data["responseData"]!;
-        response.SetResult(responseData);
-      }
-      else
-      {
-        int resultCode = (int)requestStatus["code"]!;
-        string comment = (string)requestStatus["comment"]!;
-        response.SetException(new RequestFailedException(resultCode, comment));
-      }
+      var responseTask = WaitingResponses[requestId];
+      WaitingResponses.TryRemove(new(requestId, responseTask));
+
+      OBSRequestResponse response = new OBSRequestResponse(responseTask.OriginalRequest, data);
+
+      responseTask.ResponseCompletionSource.SetResult(response);
     }
     else
     {
@@ -90,55 +88,53 @@ public partial class OBSClient
     }
   }
 
-  Dictionary<string, TaskCompletionSource<JsonArray>> WaitingBatchResponses = new();
+  Dictionary<string, OBSRequestBatchCompletionSource> WaitingBatchResponses = new();
 
   // TODO make improvements to this, including allowing OBSRequest[] and
   // updating timeout for Sleeps
-  public Task<OBSBatchRequestResult> SendBatchRequest(IEnumerable<OBSRequest> batchData, bool haltOnFailure = false,
-    RequestBatchExecutionType executionType = RequestBatchExecutionType.SerialRealtime, int timeout = 15)
+  public Task<OBSRequestBatchResult> SendBatchRequest(OBSRequestBatch requestBatch, int timeout = 15)
   {
-    int millisTimeout = batchData
+    int millisTimeout = requestBatch
       .Where(r => r.RequestType == "Sleep")
       .Select(r => (int?)r.RequestData?["sleepMillis"] ?? 0)
       .Sum();
-    int framesTimeout = batchData
+    int framesTimeout = requestBatch
       .Where(r => r.RequestType == "Sleep")
       .Select(r => (int?)r.RequestData?["sleepFrames"] ?? 0)
       .Sum();
 
-    string id = Guid.NewGuid().ToString();
-    TaskCompletionSource<JsonArray> dataTask = new();
+    TaskCompletionSource<OBSRequestBatchResult> dataTask = new();
     JsonObject request = new JsonObject
     {
       ["op"] = (int)OpCode.RequestBatch,
       ["d"] = new JsonObject
       {
-        ["requestId"] = id,
-        ["haltOnFailure"] = haltOnFailure,
-        ["executionType"] = (int)executionType,
-        ["requests"] = new JsonArray(batchData.Select(r => r.ToJson()).ToArray())
+        ["requestId"] = requestBatch.ID,
+        ["haltOnFailure"] = requestBatch.HaltOnFailure,
+        ["executionType"] = (int)requestBatch.ExecutionType,
+        ["requests"] = new JsonArray(requestBatch.Select(r => r.ToJson()).ToArray())
       }
     };
 
-    WaitingBatchResponses[id] = dataTask;
+    WaitingBatchResponses[requestBatch.ID] = new OBSRequestBatchCompletionSource { OriginalRequest = requestBatch, ResponseCompletionSource = dataTask };
     Client.Send(request.ToString());
 
     if (dataTask.Task.Wait(TimeSpan.FromSeconds(timeout) + TimeSpan.FromMilliseconds(millisTimeout)
       + TimeSpan.FromSeconds(framesTimeout / 30)))
     {
-      return Task.FromResult(new OBSBatchRequestResult(dataTask.Task.Result));
+      return Task.FromResult(dataTask.Task.Result);
     }
     else
     {
-      throw new RequestTimedOutException(id);
+      throw new RequestBatchTimedOutException(requestBatch);
     }
   }
 
-  public void SendBatchRequestWithoutWaiting(IEnumerable<OBSRequest> batchData, bool haltOnFailure = false,
+  public void SendBatchRequestWithoutWaiting(OBSRequestBatch batchData, bool haltOnFailure = false,
     RequestBatchExecutionType executionType = RequestBatchExecutionType.SerialRealtime)
   {
     string id = Guid.NewGuid().ToString();
-    TaskCompletionSource<JsonArray> dataTask = new();
+    TaskCompletionSource<OBSRequestBatchResult> dataTask = new();
     JsonObject request = new JsonObject
     {
       ["op"] = (int)OpCode.RequestBatch,
@@ -151,7 +147,7 @@ public partial class OBSClient
       }
     };
 
-    WaitingBatchResponses[id] = dataTask;
+    WaitingBatchResponses[id] = new OBSRequestBatchCompletionSource { OriginalRequest = batchData, ResponseCompletionSource = dataTask };
     Client.Send(request.ToString());
   }
 
@@ -164,13 +160,25 @@ public partial class OBSClient
     {
       var response = WaitingBatchResponses[requestId];
       WaitingBatchResponses.Remove(requestId);
-      response.SetResult(results);
+      response.ResponseCompletionSource.SetResult(new OBSRequestBatchResult(response.OriginalRequest.Requests, results));
     }
     else
     {
       Logger?.LogWarning($"Received response to batch request {requestId}, which wasn't queued for a response.");
     }
   }
+}
+
+internal struct OBSRequestCompletionSource
+{
+  internal OBSRequest OriginalRequest;
+  internal TaskCompletionSource<OBSRequestResponse> ResponseCompletionSource;
+}
+
+internal struct OBSRequestBatchCompletionSource
+{
+  internal OBSRequestBatch OriginalRequest;
+  internal TaskCompletionSource<OBSRequestBatchResult> ResponseCompletionSource;
 }
 
 public class OBSRequest
@@ -206,25 +214,25 @@ public class OBSRequest
   }
 
   public virtual OBSRequestResult ParseResult(JsonObject data)
-    => new OBSRequestResult(data);
+    => new OBSRequestResult(this, data);
 }
 
 public class OBSRequest<T> : OBSRequest where T : OBSRequestResult
 {
-  public required Func<JsonObject, T> CastResult { get; init; }
+  public required Func<OBSRequest, JsonObject, T> CastResult { get; init; }
 
   public OBSRequest() { }
 
   [SetsRequiredMembersAttribute]
-  public OBSRequest(Func<JsonObject, T> caster, string requestType, JsonObject? requestData = null, string? requestID = null)
-    : base(requestType, requestData, requestID)
+  public OBSRequest(Func<OBSRequest, JsonObject, T> caster, string requestType, JsonObject? requestData = null,
+    string? requestID = null) : base(requestType, requestData, requestID)
   {
     CastResult = caster;
   }
 
   public override T ParseResult(JsonObject data)
   {
-    return CastResult(data);
+    return CastResult(this, data);
   }
 }
 
@@ -237,4 +245,27 @@ public class OBSVoidRequest : OBSRequest
   public OBSVoidRequest(string requestType, JsonObject? requestData = null, string? requestID = null)
     : base(requestType, requestData, requestID)
   { }
+}
+
+public class OBSRequestBatch : IEnumerable<OBSRequest>
+{
+  public required List<OBSRequest> Requests { get; init; }
+  public string ID { get; init; } = Guid.NewGuid().ToString();
+  public bool HaltOnFailure { get; init; } = false;
+  public RequestBatchExecutionType ExecutionType { get; init; } = RequestBatchExecutionType.SerialRealtime;
+
+  public OBSRequestBatch() { }
+
+  [SetsRequiredMembers]
+  public OBSRequestBatch(IEnumerable<OBSRequest> requests, string? uuid = null, bool haltOnFailure = false,
+    RequestBatchExecutionType executionType = RequestBatchExecutionType.SerialRealtime)
+  {
+    Requests = requests.ToList();
+    ID = uuid ?? ID;
+    HaltOnFailure = haltOnFailure;
+    ExecutionType = executionType;
+  }
+
+  public IEnumerator<OBSRequest> GetEnumerator() => Requests.GetEnumerator();
+  IEnumerator IEnumerable.GetEnumerator() => Requests.GetEnumerator();
 }

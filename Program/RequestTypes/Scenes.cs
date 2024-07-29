@@ -13,7 +13,7 @@ public static partial class OBSRequests
     public static OBSRequest<CurrentScene> GetCurrentProgramScene()
       => new OBSRequest<CurrentScene>
       {
-        CastResult = d => new CurrentScene(d),
+        CastResult = (r, d) => new CurrentScene(r, d),
         RequestType = "GetCurrentProgramScene"
       };
 
@@ -30,7 +30,7 @@ public static partial class OBSRequests
     public static OBSRequest<CurrentScene> GetCurrentPreviewScene()
       => new OBSRequest<CurrentScene>
       {
-        CastResult = d => new CurrentScene(d),
+        CastResult = (r, d) => new CurrentScene(r, d),
         RequestType = "GetCurrentPreviewScene"
       };
 
@@ -63,7 +63,7 @@ public class CurrentScene : OBSRequestResult
   public CurrentScene() { }
 
   [SetsRequiredMembers]
-  public CurrentScene(JsonObject obj) : base(obj)
+  public CurrentScene(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     Name = (string)GetRequiredNode("sceneName")!;
     Uuid = (string)GetRequiredNode("sceneUuid")!;

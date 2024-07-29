@@ -10,7 +10,7 @@ public static partial class OBSRequests
     public static OBSRequest<RecordStatus> GetRecordStatus()
       => new OBSRequest<RecordStatus>
       {
-        CastResult = obj => new RecordStatus(obj),
+        CastResult = (req, obj) => new RecordStatus(req, obj),
         RequestType = "GetRecordStatus"
       };
     // ToggleRecord
@@ -35,7 +35,7 @@ public class RecordStatus : OBSRequestResult
   public RecordStatus() { }
 
   [SetsRequiredMembers]
-  public RecordStatus(JsonObject obj) : base(obj)
+  public RecordStatus(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     Active = (bool)obj.GetNode("outputActive");
     Paused = (bool)obj.GetNode("outputPaused");

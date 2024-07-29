@@ -2,11 +2,15 @@ namespace Nixill.OBSWS;
 
 public class RequestFailedException : Exception
 {
-  public readonly int StatusCode;
-  public readonly string Comment;
+  public readonly RequestStatus StatusCode;
+  public readonly string? Comment;
+  public readonly OBSRequest Request;
 
-  public RequestFailedException(int code, string comment) : base($"{code}: {comment}")
+  public RequestFailedException(OBSRequest request, RequestStatus code) : this(request, code, null) { }
+
+  public RequestFailedException(OBSRequest request, RequestStatus code, string? comment) : base($"{code}: {comment ?? "(No comment)"}")
   {
+    Request = request;
     StatusCode = code;
     Comment = comment;
   }
@@ -14,11 +18,21 @@ public class RequestFailedException : Exception
 
 public class RequestTimedOutException : Exception
 {
-  public readonly string Guid;
+  public readonly OBSRequest Request;
 
-  public RequestTimedOutException(string guid) : base($"Request {guid} timed out")
+  public RequestTimedOutException(OBSRequest request) : base($"Request {request.RequestID} timed out")
   {
-    Guid = guid;
+    Request = request;
+  }
+}
+
+public class RequestBatchTimedOutException : Exception
+{
+  public readonly OBSRequestBatch Requests;
+
+  public RequestBatchTimedOutException(OBSRequestBatch requests) : base($"Request batch {requests.ID} timed out")
+  {
+    Requests = requests;
   }
 }
 

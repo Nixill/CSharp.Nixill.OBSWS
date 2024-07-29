@@ -23,7 +23,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<int>> GetSceneItemId(ID sceneID, string sourceName, int searchOffset = 0)
       => new OBSRequest<OBSSingleValueResult<int>>
       {
-        CastResult = j => new OBSSingleValueResult<int>(j, n => (int)n),
+        CastResult = OBSSingleValueResult<int>.CastFunc(n => (int)n),
         RequestType = "GetSceneItemId",
         RequestData = new JsonObject
         {

@@ -10,7 +10,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSVersionInfo> GetVersion()
       => new OBSRequest<OBSVersionInfo>
       {
-        CastResult = d => new OBSVersionInfo(d),
+        CastResult = (r, d) => new OBSVersionInfo(r, d),
         RequestType = "GetVersion"
       };
 
@@ -37,7 +37,7 @@ public class OBSVersionInfo : OBSRequestResult
   public OBSVersionInfo() { }
 
   [SetsRequiredMembers]
-  public OBSVersionInfo(JsonObject obj) : base(obj)
+  public OBSVersionInfo(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     OBSVersion = (string)GetRequiredNode("obsVersion")!;
     OBSWebSocketVersion = (string)GetRequiredNode("obsWebSocketVersion")!;
@@ -70,4 +70,16 @@ public struct ID
 
   public static implicit operator KeyValuePair<string, JsonNode?>(ID id)
     => new KeyValuePair<string, JsonNode?>(id.Key, id.Value);
+}
+
+internal static class IDExtensions
+{
+  internal static JsonObject AddID(this JsonObject input, ID id, string idType = "")
+  {
+    input.Add($"{idType}{id.Key}", id.Value);
+    return input;
+  }
+
+  internal static KeyValuePair<string, JsonNode?> KVPOf(this ID id, string idType)
+    => new KeyValuePair<string, JsonNode?>($"{idType}{id.Key}", id.Value);
 }
