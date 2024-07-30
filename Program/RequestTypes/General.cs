@@ -61,6 +61,9 @@ public struct ID
     Value = value;
   }
 
+  public bool Matches(string type, JsonObject o)
+    => o[type + Key] != null && (string)o[type + Key]! == Value;
+
   public static ID FromName(string name) => new ID("Name", name);
   public static ID FromUuid(string uuid) => new ID("Uuid", uuid);
   public static ID FromGuid(Guid guid) => new ID("Uuid", guid.ToString());

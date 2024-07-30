@@ -88,7 +88,7 @@ public partial class OBSClient
     }
   }
 
-  Dictionary<string, OBSRequestBatchCompletionSource> WaitingBatchResponses = new();
+  ConcurrentDictionary<string, OBSRequestBatchCompletionSource> WaitingBatchResponses = new();
 
   // TODO make improvements to this, including allowing OBSRequest[] and
   // updating timeout for Sleeps
@@ -159,7 +159,7 @@ public partial class OBSClient
     if (WaitingBatchResponses.ContainsKey(requestId))
     {
       var response = WaitingBatchResponses[requestId];
-      WaitingBatchResponses.Remove(requestId);
+      WaitingBatchResponses.TryRemove(new(requestId, response));
       response.ResponseCompletionSource.SetResult(new OBSRequestBatchResult(response.OriginalRequest.Requests, results));
     }
     else
@@ -264,6 +264,12 @@ public class OBSRequestBatch : IEnumerable<OBSRequest>
     ID = uuid ?? ID;
     HaltOnFailure = haltOnFailure;
     ExecutionType = executionType;
+  }
+
+  [SetsRequiredMembers]
+  public OBSRequestBatch(params OBSRequest[] requests)
+  {
+    Requests = requests.ToList();
   }
 
   public IEnumerator<OBSRequest> GetEnumerator() => Requests.GetEnumerator();
