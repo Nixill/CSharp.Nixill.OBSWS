@@ -20,7 +20,15 @@ public static partial class OBSRequests
     // GetHotkeyList
     // TriggerHotkeyByName
     // TriggerHotkeyByKeySequence
-    // Sleep
+
+    public static OBSVoidRequest Sleep(int millis = 0, int frames = 0)
+      => new OBSVoidRequest
+      {
+        RequestType = "Sleep",
+        RequestData = (JsonObject)new JsonObject()
+          .WithValueIf("sleepMillis", millis, millis != 0)
+          .WithValueIf("sleepFrames", frames, frames != 0 && millis == 0)
+      };
   }
 }
 
