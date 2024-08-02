@@ -12,4 +12,7 @@ internal static class Utils
     if (condition) input[key] = value;
     return input;
   }
+
+  internal static IDictionary<K, V> WithValueIfNotNull<K, V>(this IDictionary<K, V> input, K key, V value)
+    => input.WithValueIf(key, value, value != null);
 }

@@ -14,12 +14,60 @@ public static partial class OBSRequests
         RequestType = "GetVersion"
       };
 
-    // GetStats
-    // BroadcastCustomEvent
-    // CallVendorRequest
-    // GetHotkeyList
-    // TriggerHotkeyByName
-    // TriggerHotkeyByKeySequence
+    public static OBSRequest<OBSStatsInfo> GetStats()
+      => new OBSRequest<OBSStatsInfo>
+      {
+        CastResult = (r, d) => new OBSStatsInfo(r, d),
+        RequestType = "GetStats"
+      };
+
+    public static OBSVoidRequest BroadcastCustomEvent(JsonObject eventData)
+      => new OBSVoidRequest
+      {
+        RequestType = "BroadcastCustomEvent",
+        RequestData = new JsonObject
+        {
+          ["eventData"] = eventData
+        }
+      };
+
+    public static OBSRequest<OBSVendorResponse> CallVendorRequest(string vendorName, string requestType, JsonObject? requestData = null)
+      => new OBSRequest<OBSVendorResponse>
+      {
+        CastResult = (r, d) => new OBSVendorResponse(r, d),
+        RequestType = "CallVendorRequest",
+        RequestData = (JsonObject)new JsonObject
+        {
+          ["vendorName"] = vendorName,
+          ["requestType"] = requestType
+        }.WithValueIf("requestData", requestData, requestData != null)
+      };
+
+    public static OBSRequest<OBSListResult<string>> GetHotkeyList()
+      => new OBSRequest<OBSListResult<string>>
+      {
+        CastResult = OBSListResult<string>.CastFunc(n => (string)n!),
+        RequestType = "GetHotkeyList"
+      };
+
+    public static OBSVoidRequest TriggerHotkeyByName(string hotkeyName, string? contextName = null)
+      => new OBSVoidRequest
+      {
+        RequestType = "TriggerHotkeyByName",
+        RequestData = (JsonObject)new JsonObject
+        {
+          ["hotkeyName"] = hotkeyName
+        }.WithValueIfNotNull("contextName", contextName)
+      };
+
+    public static OBSVoidRequest TriggerHotkeyByKeySequence(string? keyID = null, KeyModifiers? keyModifiers = null)
+      => new OBSVoidRequest
+      {
+        RequestType = "TriggerHotkeyByKeySequence",
+        RequestData = (JsonObject)new JsonObject()
+          .WithValueIfNotNull("keyId", keyID)
+          .WithValueIfNotNull("keyModifiers", keyModifiers?.ToJson())
+      };
 
     public static OBSVoidRequest Sleep(int millis = 0, int frames = 0)
       => new OBSVoidRequest
@@ -55,6 +103,75 @@ public class OBSVersionInfo : OBSRequestResult
     Platform = (string)GetRequiredNode("platform")!;
     PlatformDescription = (string)GetRequiredNode("platformDescription")!;
   }
+}
+
+public class OBSStatsInfo : OBSRequestResult
+{
+  public required double CPUUsage { get; init; }
+  public required double MemoryUsage { get; init; }
+  public required double AvailableDiskSpace { get; init; }
+  public required double ActiveFPS { get; init; }
+  public required double AverageFrameRenderTime { get; init; }
+  public required int RenderSkippedFrames { get; init; }
+  public required int RenderTotalFrames { get; init; }
+  public required int OutputSkippedFrames { get; init; }
+  public required int OutputTotalFrames { get; init; }
+  public required int WebSocketSessionIncomingMessages { get; init; }
+  public required int WebSocketSessionOutgoingMessages { get; init; }
+
+  public OBSStatsInfo() { }
+
+  [SetsRequiredMembers]
+  public OBSStatsInfo(OBSRequest req, JsonObject obj) : base(req, obj)
+  {
+    CPUUsage = (double)GetRequiredNode("cpuUsage");
+    MemoryUsage = (double)GetRequiredNode("memoryUsage");
+    AvailableDiskSpace = (double)GetRequiredNode("availableDiskSpace");
+    ActiveFPS = (double)GetRequiredNode("activeFps");
+    AverageFrameRenderTime = (double)GetRequiredNode("averageFrameRenderTime");
+    RenderSkippedFrames = (int)GetRequiredNode("renderSkippedFrames");
+    RenderTotalFrames = (int)GetRequiredNode("renderTotalFrames");
+    OutputSkippedFrames = (int)GetRequiredNode("outputSkippedFrames");
+    OutputTotalFrames = (int)GetRequiredNode("outputTotalFrames");
+    WebSocketSessionIncomingMessages = (int)GetRequiredNode("webSocketSessionIncomingMessages");
+    WebSocketSessionOutgoingMessages = (int)GetRequiredNode("webSocketSessionOutgoingMessages");
+  }
+}
+
+public class OBSVendorResponse : OBSRequestResult
+{
+  public required string VendorName { get; init; }
+  public required string RequestTypeFromVendor { get; init; }
+  public required JsonObject ResponseDataFromVendor { get; init; }
+
+  public OBSVendorResponse() { }
+
+  [SetsRequiredMembers]
+  public OBSVendorResponse(OBSRequest req, JsonObject obj) : base(req, obj)
+  {
+    VendorName = (string)GetRequiredNode("vendorName")!;
+    RequestTypeFromVendor = (string)GetRequiredNode("requestType")!;
+    ResponseDataFromVendor = (JsonObject)GetRequiredNode("responseData");
+  }
+}
+
+public struct KeyModifiers
+{
+  public KeyModifiers() { }
+
+  public bool Shift { get; init; } = false;
+  public bool Control { get; init; } = false;
+  public bool Alt { get; init; } = false;
+  public bool Command { get; init; } = false;
+
+  public JsonObject ToJson()
+    => new JsonObject
+    {
+      ["shift"] = Shift,
+      ["control"] = Control,
+      ["alt"] = Alt,
+      ["command"] = Command
+    };
 }
 
 public struct ID
