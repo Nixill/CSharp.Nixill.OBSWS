@@ -15,12 +15,29 @@ public static partial class OBSRequests
         RequestData = (JsonObject)new JsonObject().WithValueIf("inputKind", inputKind, inputKind != null)
       };
 
-    // GetInputKindList
+    public static OBSRequest<OBSListResult<string>> GetInputKindList(bool unversioned = false)
+      => new OBSRequest<OBSListResult<string>>
+      {
+        CastResult = OBSListResult<string>.CastFunc(n => (string)n!),
+        RequestType = "GetInputKindList",
+        RequestData = new JsonObject { ["unversioned"] = unversioned }
+      };
+
     // GetSpecialInputs
     // CreateInput
     // RemoveInput
     // SetInputName
-    // GetInputDefaultSettings
+
+    public static OBSRequest<InputSettingsResult> GetInputDefaultSettings(string inputKind)
+      => new OBSRequest<InputSettingsResult>
+      {
+        CastResult = (r, j) => new InputSettingsResult(r, j),
+        RequestType = "GetInputDefaultSettings",
+        RequestData = new JsonObject
+        {
+          ["inputKind"] = inputKind
+        }
+      };
 
     public static OBSRequest<InputSettingsResult> GetInputSettings(ID inputID)
       => new OBSRequest<InputSettingsResult>
