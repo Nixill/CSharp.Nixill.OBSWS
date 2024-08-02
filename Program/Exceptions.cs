@@ -45,3 +45,5 @@ public class MissingFieldException : Exception
     Field = field;
   }
 }
+
+public class OBSDisconnectedException : Exception { }

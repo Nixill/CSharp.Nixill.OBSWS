@@ -15,6 +15,8 @@ public partial class OBSClient
   internal string Password;
   public EventSubscription EventSubscriptions { get; private set; }
 
+  public TaskCompletionSource<bool>? WaitForIdentify { get; private set; }
+
   public bool IsConnected { get; private set; } = false;
   public bool IsIdentified { get; private set; } = false;
 
@@ -38,12 +40,14 @@ public partial class OBSClient
   {
     await Client.StartOrFail();
     IsConnected = true;
+    WaitForIdentify = new TaskCompletionSource<bool>();
   }
 
   public Task<bool> Disconnect() => Disconnect(WebSocketCloseStatus.Empty, "");
   public async Task<bool> Disconnect(WebSocketCloseStatus code, string description)
   {
     bool success = await Client.StopOrFail(code, description);
+    WaitForIdentify?.TrySetException(new OBSDisconnectedException());
     IsConnected = false;
     IsIdentified = false;
     return success;
@@ -92,7 +96,9 @@ public partial class OBSClient
         HandleHello(data); break;
       case OpCode.Identified:
         Logger?.LogInformation("Successfully identified.");
-        IsIdentified = true; break;
+        IsIdentified = true;
+        WaitForIdentify?.SetResult(true); // shouldn't be null but play it safe
+        break;
       case OpCode.Event:
         await Events.Handle(data); break;
       case OpCode.RequestResponse:
