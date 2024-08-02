@@ -28,10 +28,10 @@ public static partial class OBSRequests
     // RemoveInput
     // SetInputName
 
-    public static OBSRequest<InputSettingsResult> GetInputDefaultSettings(string inputKind)
-      => new OBSRequest<InputSettingsResult>
+    public static OBSRequest<OBSSingleValueResult<JsonObject>> GetInputDefaultSettings(string inputKind)
+      => new OBSRequest<OBSSingleValueResult<JsonObject>>
       {
-        CastResult = (r, j) => new InputSettingsResult(r, j),
+        CastResult = OBSSingleValueResult<JsonObject>.CastFunc(n => (JsonObject)n),
         RequestType = "GetInputDefaultSettings",
         RequestData = new JsonObject
         {
