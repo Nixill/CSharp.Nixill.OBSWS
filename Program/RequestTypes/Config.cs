@@ -1,11 +1,35 @@
+using System.Text.Json.Nodes;
+
 namespace Nixill.OBSWS;
 
 public static partial class OBSRequests
 {
   public static class Config
   {
-    // GetPersistentData
-    // SetPersistentData
+    public static OBSRequest<OBSSingleValueResult<JsonNode>> GetPersistentData(OBSWebsocketDataRealm realm, string slotName)
+      => new OBSRequest<OBSSingleValueResult<JsonNode>>
+      {
+        CastResult = OBSSingleValueResult<JsonNode>.CastFunc(n => n),
+        RequestType = "GetPersistentData",
+        RequestData = new JsonObject
+        {
+          ["realm"] = realm.GetIdentifierValue(),
+          ["slotName"] = slotName
+        }
+      };
+
+    public static OBSVoidRequest SetPersistentData(OBSWebsocketDataRealm realm, string slotName, JsonNode value)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetPersistentData",
+        RequestData = new JsonObject
+        {
+          ["realm"] = realm.GetIdentifierValue(),
+          ["slotName"] = slotName,
+          ["value"] = value
+        }
+      };
+
     // GetSceneCollectionList
     // SetCurrentSceneCollection
     // CreateSceneCollection

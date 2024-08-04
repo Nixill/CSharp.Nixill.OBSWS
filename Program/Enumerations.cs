@@ -1,3 +1,5 @@
+namespace Nixill.OBSWS;
+
 public enum OpCode
 {
   Hello = 0,
@@ -326,6 +328,24 @@ public static class MonitoringTypes
     => StringValueAttribute.FindValue<MonitoringType>(value);
 }
 
+public enum OBSWebsocketDataRealm
+{
+  [StringValue("OBS_WEBSOCKET_DATA_REALM_GLOBAL")]
+  Global,
+  [StringValue("OBS_WEBSOCKET_DATA_REALM_PROFILE")]
+  Profile
+}
+
+public static class OBSWebsocketDataRealms
+{
+  public static string GetIdentifierValue(this OBSWebsocketDataRealm mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static OBSWebsocketDataRealm ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<OBSWebsocketDataRealm>(value);
+}
+
+[AttributeUsage(AttributeTargets.Field)]
 public class StringValueAttribute : Attribute
 {
   public string Value { get; init; }
