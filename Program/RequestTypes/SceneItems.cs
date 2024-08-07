@@ -37,7 +37,18 @@ public static partial class OBSRequests
     // CreateSceneItem
     // RemoveSceneItem
     // DuplicateSceneItem
-    // GetSceneItemTransform
+
+    public static OBSRequest<OBSSingleValueResult<SceneItemTransform>> GetSceneItemTransform(ID sceneID, int sceneItemID)
+      => new OBSRequest<OBSSingleValueResult<SceneItemTransform>>
+      {
+        CastResult = OBSSingleValueResult<SceneItemTransform>.CastFunc(n => new SceneItemTransform((JsonObject)n)),
+        RequestType = "GetSceneItemTransform",
+        RequestData = new JsonObject
+        {
+          ["sceneItemId"] = sceneItemID
+        }.AddID(sceneID, "scene")
+      };
+
     // SetSceneItemTransform
     // GetSceneItemEnabled
 
