@@ -1,6 +1,6 @@
 using System.Collections.Frozen;
 
-namespace Nixill.OBSWS.BatchExtensions;
+namespace Nixill.OBSWS.Extensions;
 
 public static class RequestBatchExtensions
 {
@@ -34,7 +34,7 @@ public static class RequestBatchExtensions
     Func<IEnumerable<OBSRequestResponse>, bool>? resultListCondition = null)
     where T : notnull where V : notnull
   {
-    var requests = inputs.SelectMany(i => requestListMapper(i).Select(r => (Input: i, Request: r)));
+    var requests = inputs.SelectMany(i => requestListMapper(i).Select(r => (Input: i, Request: r))).ToList();
 
     OBSRequestBatch batch = new OBSRequestBatch(requests.Select(i => i.Request),
       haltOnFailure: haltOnFailure, executionType: executionType);
