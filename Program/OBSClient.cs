@@ -20,10 +20,12 @@ public partial class OBSClient
   public bool IsConnected { get; private set; } = false;
   public bool IsIdentified { get; private set; } = false;
 
-  public OBSClient(string ip, int port = 4455, string password = "", EventSubscription subs = EventSubscription.All, ILoggerFactory? loggerFactory = null)
-  {
-    Uri uri = new($"ws://{ip}:{port}/");
+  public OBSClient(string ip, int port = 4455, string password = "", EventSubscription subs = EventSubscription.All,
+  ILoggerFactory? loggerFactory = null) : this(new Uri($"ws://{ip}:{port}/"), password, subs, loggerFactory) { }
 
+  public OBSClient(Uri uri, string password = "", EventSubscription subs = EventSubscription.All,
+  ILoggerFactory? loggerFactory = null)
+  {
     Client = new WebsocketClient(uri);
     Client.ReconnectTimeout = TimeSpan.FromSeconds(15);
     Client.MessageReceived.Subscribe(msg => Task.Run(() => Dispatch(msg)));
