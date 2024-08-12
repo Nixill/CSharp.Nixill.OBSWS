@@ -10,7 +10,7 @@ public static class RequestBatchExtensions
     Predicate<OBSRequestResponse>? resultCondition = null)
     where T : notnull where V : notnull
   {
-    var requests = inputs.Select(i => (Input: i, Request: requestMapper(i)));
+    var requests = inputs.Select(i => (Input: i, Request: requestMapper(i))).ToList();
 
     OBSRequestBatch batch = new OBSRequestBatch(requests.Select(i => i.Request),
       haltOnFailure: haltOnFailure, executionType: executionType);
