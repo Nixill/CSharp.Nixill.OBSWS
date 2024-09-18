@@ -52,9 +52,9 @@ public class StreamStatus : OBSRequestResult
   public required string Timecode { get; init; }
   public required double Duration { get; init; }
   public required double Congestion { get; init; }
-  public required int Bytes { get; init; }
-  public required int SkippedFrames { get; init; }
-  public required int TotalFrames { get; init; }
+  public required long Bytes { get; init; }
+  public required long SkippedFrames { get; init; }
+  public required long TotalFrames { get; init; }
 
   public StreamStatus() { }
 
@@ -66,8 +66,8 @@ public class StreamStatus : OBSRequestResult
     Timecode = (string)obj.GetNode("outputTimecode")!;
     Duration = (double)obj.GetNode("outputDuration");
     Congestion = (double)obj.GetNode("outputCongestion");
-    Bytes = (int)obj.GetNode("outputBytes");
-    SkippedFrames = (int)obj.GetNode("outputSkippedFrames");
-    TotalFrames = (int)obj.GetNode("outputTotalFrames");
+    Bytes = (long)obj.GetNode("outputBytes");
+    SkippedFrames = (long)obj.GetNode("outputSkippedFrames");
+    TotalFrames = (long)obj.GetNode("outputTotalFrames");
   }
 }
