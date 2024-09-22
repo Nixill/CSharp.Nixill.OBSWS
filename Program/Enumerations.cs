@@ -357,7 +357,7 @@ public class StringValueAttribute : Attribute
     try
     {
       return (typeof(T)
-        .GetField(input.ToString()) ?? throw new InvalidCastException($"No enum constant exists for ({typeof(T).Name}){input.ToString()}"))
+        .GetField(input.ToString()) ?? throw new InvalidCastException($"No enum constant exists for ({typeof(T).Name}).{input}"))
         .GetCustomAttributes(typeof(StringValueAttribute), false)
         .Cast<StringValueAttribute>()
         .Single()
@@ -365,7 +365,7 @@ public class StringValueAttribute : Attribute
     }
     catch (InvalidOperationException ex)
     {
-      if (ex.Message == "Sequence contains no elements") throw new InvalidOperationException($"No StringValueAttribute exists on {typeof(T).Name}.{input.ToString()}");
+      if (ex.Message == "Sequence contains no elements") throw new InvalidOperationException($"No StringValueAttribute exists on {typeof(T).Name}.{input}");
       else throw;
     }
   }
