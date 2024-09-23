@@ -44,7 +44,7 @@ public partial class OBSClient
   }
 
   public async Task<T> SendRequest<T>(OBSRequest<T> requestD, int timeout = 30) where T : OBSRequestResult
-    => (T)(await SendRequest((OBSRequest)requestD, timeout));
+    => (T)await SendRequest((OBSRequest)requestD, timeout);
 
   public Task<OBSRequestResult> SendRequest(string requestType, JsonObject requestData, int timeout = 30)
     => SendRequest(new OBSRequest(requestType, requestData), timeout);
@@ -83,8 +83,7 @@ public partial class OBSClient
     }
     else
     {
-      Logger?.LogWarning($"Received response to request {requestId} of type {(data["requestType"]
-        )}, which wasn't queued for a response.");
+      Logger?.LogWarning($"Received response to request {requestId} of type {data["requestType"]}, which wasn't queued for a response.");
     }
   }
 
@@ -189,7 +188,7 @@ public class OBSRequest
 
   public OBSRequest() { }
 
-  [SetsRequiredMembersAttribute]
+  [SetsRequiredMembers]
   public OBSRequest(string requestType, JsonObject? requestData = null, string? requestID = null)
   {
     RequestType = requestType;

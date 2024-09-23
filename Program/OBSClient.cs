@@ -15,7 +15,7 @@ public partial class OBSClient
   internal string Password;
   public EventSubscription EventSubscriptions { get; private set; }
 
-  public TaskCompletionSource<bool>? WaitForIdentify { get; private set; }
+  TaskCompletionSource<bool> IdentifyWaitTask = new TaskCompletionSource<bool>();
 
   public bool IsConnected { get; private set; } = false;
   public bool IsIdentified { get; private set; } = false;
@@ -38,18 +38,29 @@ public partial class OBSClient
     Events = new(this);
   }
 
-  public async Task Connect()
+  public async Task ConnectAsync()
   {
+    if (IdentifyWaitTask.Task.IsCompleted) IdentifyWaitTask = new();
     await Client.StartOrFail();
     IsConnected = true;
-    WaitForIdentify = new TaskCompletionSource<bool>();
   }
 
-  public Task<bool> Disconnect() => Disconnect(WebSocketCloseStatus.Empty, "");
-  public async Task<bool> Disconnect(WebSocketCloseStatus code, string description)
+  public async Task<bool> WaitForIdentify()
+  {
+    return await IdentifyWaitTask.Task;
+  }
+
+  public async Task<bool> ConnectAndIdentifyAsync()
+  {
+    await ConnectAsync();
+    return await IdentifyWaitTask.Task;
+  }
+
+  public Task<bool> DisconnectAsync() => DisconnectAsync(WebSocketCloseStatus.Empty, "");
+  public async Task<bool> DisconnectAsync(WebSocketCloseStatus code, string description)
   {
     bool success = await Client.StopOrFail(code, description);
-    WaitForIdentify?.TrySetException(new OBSDisconnectedException());
+    IdentifyWaitTask.TrySetException(new OBSDisconnectedException());
     IsConnected = false;
     IsIdentified = false;
     return success;
@@ -99,7 +110,7 @@ public partial class OBSClient
       case OpCode.Identified:
         Logger?.LogInformation("Successfully identified.");
         IsIdentified = true;
-        WaitForIdentify?.SetResult(true); // shouldn't be null but play it safe
+        IdentifyWaitTask.SetResult(true);
         break;
       case OpCode.Event:
         await Events.Handle(data); break;
@@ -125,12 +136,11 @@ public partial class OBSClient
     // Get authentication info
     if (data.ContainsKey("authentication"))
     {
-      SHA256 encoder = SHA256.Create();
       string password = Password;
       string salt = (string)data["authentication"]!["salt"]!;
-      string salted_pass = Convert.ToBase64String(encoder.ComputeHash(Encoding.UTF8.GetBytes(password + salt)));
+      string salted_pass = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(password + salt)));
       string challenge = (string)data["authentication"]!["challenge"]!;
-      string authKey = Convert.ToBase64String(encoder.ComputeHash(Encoding.UTF8.GetBytes(salted_pass + challenge)));
+      string authKey = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(salted_pass + challenge)));
 
       identify["d"]!["authentication"] = authKey;
     }
