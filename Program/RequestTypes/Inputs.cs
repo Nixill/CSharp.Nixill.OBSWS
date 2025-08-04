@@ -39,10 +39,10 @@ public static partial class OBSRequests
         }
       };
 
-    public static OBSRequest<InputSettingsResult> GetInputSettings(ID inputID)
-      => new OBSRequest<InputSettingsResult>
+    public static OBSRequest<InputSettings> GetInputSettings(ID inputID)
+      => new OBSRequest<InputSettings>
       {
-        CastResult = (r, j) => new InputSettingsResult(r, j),
+        CastResult = (r, j) => new InputSettings(r, j),
         RequestType = "GetInputSettings",
         RequestData = new JsonObject
         {
@@ -92,10 +92,10 @@ public static partial class OBSRequests
         }.AddID(inputID, "input")
       };
 
-    public static OBSRequest<InputAudioTracksResult> GetInputAudioTracks(ID inputID)
-      => new OBSRequest<InputAudioTracksResult>
+    public static OBSRequest<InputAudioTracks> GetInputAudioTracks(ID inputID)
+      => new OBSRequest<InputAudioTracks>
       {
-        CastResult = (r, o) => new InputAudioTracksResult(r, o),
+        CastResult = (r, o) => new InputAudioTracks(r, o),
         RequestType = "GetInputAudioTracks",
         RequestData = new JsonObject {
           inputID.KVPOf("input")
@@ -142,31 +142,31 @@ public class OBSInput
   }
 }
 
-public class InputSettingsResult : OBSRequestResult
+public class InputSettings : OBSRequestResult
 {
-  public required JsonObject InputSettings { get; init; }
-  public required string InputKind { get; init; }
+  public required JsonObject Settings { get; init; }
+  public required string Kind { get; init; }
 
-  public InputSettingsResult() : base() { }
+  public InputSettings() : base() { }
 
   [SetsRequiredMembers]
-  public InputSettingsResult(OBSRequest req, JsonObject obj) : base(req, obj)
+  public InputSettings(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    InputSettings = (JsonObject)GetNode("inputSettings");
-    InputKind = (string)GetNode("inputKind")!;
+    Settings = (JsonObject)GetNode("inputSettings");
+    Kind = (string)GetNode("inputKind")!;
   }
 }
 
-public class InputAudioTracksResult : OBSRequestResult
+public class InputAudioTracks : OBSRequestResult
 {
   public required Dictionary<string, bool> AudioTracks { get; init; }
 
-  public InputAudioTracksResult() { }
+  public InputAudioTracks() { }
 
   [SetsRequiredMembers]
-  public InputAudioTracksResult(OBSRequest req, JsonObject obj) : base(req, obj)
+  public InputAudioTracks(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    AudioTracks = ((JsonObject)obj.GetNode("inputAudioTracks"))
+    AudioTracks = ((JsonObject)GetNode("inputAudioTracks"))
       .Select(kvp => (kvp.Key, (bool)kvp.Value!))
       .ToDictionary();
   }

@@ -31,10 +31,10 @@ public static partial class OBSRequests
         }
       };
 
-    public static OBSRequest<OBSSceneCollectionList> GetSceneCollectionList()
-      => new OBSRequest<OBSSceneCollectionList>
+    public static OBSRequest<SceneCollectionList> GetSceneCollectionList()
+      => new OBSRequest<SceneCollectionList>
       {
-        CastResult = (r, d) => new OBSSceneCollectionList(r, d),
+        CastResult = (r, d) => new SceneCollectionList(r, d),
         RequestType = "GetSceneCollectionList"
       };
 
@@ -58,10 +58,10 @@ public static partial class OBSRequests
         }
       };
 
-    public static OBSRequest<OBSProfileList> GetProfileList()
-      => new OBSRequest<OBSProfileList>
+    public static OBSRequest<ProfileList> GetProfileList()
+      => new OBSRequest<ProfileList>
       {
-        CastResult = (r, d) => new OBSProfileList(r, d),
+        CastResult = (r, d) => new ProfileList(r, d),
         RequestType = "GetProfileList"
       };
 
@@ -95,10 +95,10 @@ public static partial class OBSRequests
         }
       };
 
-    public static OBSRequest<OBSProfileParameter> GetProfileParameter(string category, string name)
-      => new OBSRequest<OBSProfileParameter>
+    public static OBSRequest<ProfileParameter> GetProfileParameter(string category, string name)
+      => new OBSRequest<ProfileParameter>
       {
-        CastResult = (r, d) => new OBSProfileParameter(r, d),
+        CastResult = (r, d) => new ProfileParameter(r, d),
         RequestType = "GetProfileParameter",
         RequestData = new JsonObject
         {
@@ -119,10 +119,10 @@ public static partial class OBSRequests
         }
       };
 
-    public static OBSRequest<OBSVideoSettings> GetVideoSettings()
-      => new OBSRequest<OBSVideoSettings>
+    public static OBSRequest<VideoSettings> GetVideoSettings()
+      => new OBSRequest<VideoSettings>
       {
-        CastResult = (r, d) => new OBSVideoSettings(r, d),
+        CastResult = (r, d) => new VideoSettings(r, d),
         RequestType = "GetVideoSettings"
       };
 
@@ -141,10 +141,10 @@ public static partial class OBSRequests
       };
     }
 
-    public static OBSRequest<OBSStreamServiceSettings> GetStreamServiceSettings()
-      => new OBSRequest<OBSStreamServiceSettings>
+    public static OBSRequest<StreamServiceSettings> GetStreamServiceSettings()
+      => new OBSRequest<StreamServiceSettings>
       {
-        CastResult = (r, d) => new OBSStreamServiceSettings(r, d),
+        CastResult = (r, d) => new StreamServiceSettings(r, d),
         RequestType = "GetStreamServiceSettings"
       };
 
@@ -177,52 +177,52 @@ public static partial class OBSRequests
       };
   }
 
-  public class OBSSceneCollectionList : OBSRequestResult
+  public class SceneCollectionList : OBSRequestResult
   {
     public required string CurrentSceneCollectionName { get; init; }
     public required string[] SceneCollections { get; init; }
 
-    public OBSSceneCollectionList() { }
+    public SceneCollectionList() { }
 
     [SetsRequiredMembers]
-    public OBSSceneCollectionList(OBSRequest req, JsonObject obj) : base(req, obj)
+    public SceneCollectionList(OBSRequest req, JsonObject obj) : base(req, obj)
     {
       CurrentSceneCollectionName = (string)GetNode("currentSceneCollectionName")!;
       SceneCollections = GetNode("sceneCollections").ToStringArray();
     }
   }
 
-  public class OBSProfileList : OBSRequestResult
+  public class ProfileList : OBSRequestResult
   {
     public required string CurrentProfileName { get; init; }
     public required string[] Profiles { get; init; }
 
-    public OBSProfileList() { }
+    public ProfileList() { }
 
     [SetsRequiredMembers]
-    public OBSProfileList(OBSRequest req, JsonObject obj) : base(req, obj)
+    public ProfileList(OBSRequest req, JsonObject obj) : base(req, obj)
     {
       CurrentProfileName = (string)GetNode("currentProfileName")!;
       Profiles = GetNode("profiles").ToStringArray();
     }
   }
 
-  public class OBSProfileParameter : OBSRequestResult
+  public class ProfileParameter : OBSRequestResult
   {
     public required string? Value { get; init; }
     public required string? DefaultValue { get; init; }
 
-    public OBSProfileParameter() { }
+    public ProfileParameter() { }
 
     [SetsRequiredMembers]
-    public OBSProfileParameter(OBSRequest req, JsonObject obj) : base(req, obj)
+    public ProfileParameter(OBSRequest req, JsonObject obj) : base(req, obj)
     {
       Value = (string?)GetNode("parameterValue");
       DefaultValue = (string?)GetNode("defaultParameterValue");
     }
   }
 
-  public class OBSVideoSettings : OBSRequestResult
+  public class VideoSettings : OBSRequestResult
   {
     public required int FPSNumerator { get; init; }
     public required int FPSDenominator { get; init; }
@@ -232,10 +232,10 @@ public static partial class OBSRequests
     public required int OutputWidth { get; init; }
     public required int OutputHeight { get; init; }
 
-    public OBSVideoSettings() { }
+    public VideoSettings() { }
 
     [SetsRequiredMembers]
-    public OBSVideoSettings(OBSRequest req, JsonObject obj) : base(req, obj)
+    public VideoSettings(OBSRequest req, JsonObject obj) : base(req, obj)
     {
       FPSNumerator = (int)GetNode("fpsNumerator");
       FPSDenominator = (int)GetNode("fpsDenominator");
@@ -246,18 +246,18 @@ public static partial class OBSRequests
     }
   }
 
-  public class OBSStreamServiceSettings : OBSRequestResult
+  public class StreamServiceSettings : OBSRequestResult
   {
-    public required string StreamServiceType { get; init; }
-    public required JsonObject StreamServiceSettings { get; init; }
+    public required string Type { get; init; }
+    public required JsonObject Settings { get; init; }
 
-    public OBSStreamServiceSettings() { }
+    public StreamServiceSettings() { }
 
     [SetsRequiredMembers]
-    public OBSStreamServiceSettings(OBSRequest req, JsonObject obj) : base(req, obj)
+    public StreamServiceSettings(OBSRequest req, JsonObject obj) : base(req, obj)
     {
-      StreamServiceType = (string)GetNode("streamServiceType")!;
-      StreamServiceSettings = (JsonObject)GetNode("streamServiceSettings");
+      Type = (string)GetNode("streamServiceType")!;
+      Settings = (JsonObject)GetNode("streamServiceSettings");
     }
   }
 }

@@ -7,17 +7,17 @@ public static partial class OBSRequests
 {
   public static class General
   {
-    public static OBSRequest<OBSVersionInfo> GetVersion()
-      => new OBSRequest<OBSVersionInfo>
+    public static OBSRequest<VersionInfo> GetVersion()
+      => new OBSRequest<VersionInfo>
       {
-        CastResult = (r, d) => new OBSVersionInfo(r, d),
+        CastResult = (r, d) => new VersionInfo(r, d),
         RequestType = "GetVersion"
       };
 
-    public static OBSRequest<OBSStatsInfo> GetStats()
-      => new OBSRequest<OBSStatsInfo>
+    public static OBSRequest<StatsInfo> GetStats()
+      => new OBSRequest<StatsInfo>
       {
-        CastResult = (r, d) => new OBSStatsInfo(r, d),
+        CastResult = (r, d) => new StatsInfo(r, d),
         RequestType = "GetStats"
       };
 
@@ -31,10 +31,10 @@ public static partial class OBSRequests
         }
       };
 
-    public static OBSRequest<OBSVendorResponse> CallVendorRequest(string vendorName, string requestType, JsonObject? requestData = null)
-      => new OBSRequest<OBSVendorResponse>
+    public static OBSRequest<VendorResponse> CallVendorRequest(string vendorName, string requestType, JsonObject? requestData = null)
+      => new OBSRequest<VendorResponse>
       {
-        CastResult = (r, d) => new OBSVendorResponse(r, d),
+        CastResult = (r, d) => new VendorResponse(r, d),
         RequestType = "CallVendorRequest",
         RequestData = (JsonObject)new JsonObject
         {
@@ -80,7 +80,7 @@ public static partial class OBSRequests
   }
 }
 
-public class OBSVersionInfo : OBSRequestResult
+public class VersionInfo : OBSRequestResult
 {
   public required string OBSVersion { get; init; }
   public required string OBSWebSocketVersion { get; init; }
@@ -90,10 +90,10 @@ public class OBSVersionInfo : OBSRequestResult
   public required string Platform { get; init; }
   public required string PlatformDescription { get; init; }
 
-  public OBSVersionInfo() { }
+  public VersionInfo() { }
 
   [SetsRequiredMembers]
-  public OBSVersionInfo(OBSRequest req, JsonObject obj) : base(req, obj)
+  public VersionInfo(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     OBSVersion = (string)GetNode("obsVersion")!;
     OBSWebSocketVersion = (string)GetNode("obsWebSocketVersion")!;
@@ -105,7 +105,7 @@ public class OBSVersionInfo : OBSRequestResult
   }
 }
 
-public class OBSStatsInfo : OBSRequestResult
+public class StatsInfo : OBSRequestResult
 {
   public required double CPUUsage { get; init; }
   public required double MemoryUsage { get; init; }
@@ -119,10 +119,10 @@ public class OBSStatsInfo : OBSRequestResult
   public required int WebSocketSessionIncomingMessages { get; init; }
   public required int WebSocketSessionOutgoingMessages { get; init; }
 
-  public OBSStatsInfo() { }
+  public StatsInfo() { }
 
   [SetsRequiredMembers]
-  public OBSStatsInfo(OBSRequest req, JsonObject obj) : base(req, obj)
+  public StatsInfo(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     CPUUsage = (double)GetNode("cpuUsage");
     MemoryUsage = (double)GetNode("memoryUsage");
@@ -138,16 +138,16 @@ public class OBSStatsInfo : OBSRequestResult
   }
 }
 
-public class OBSVendorResponse : OBSRequestResult
+public class VendorResponse : OBSRequestResult
 {
   public required string VendorName { get; init; }
   public required string RequestTypeFromVendor { get; init; }
   public required JsonObject ResponseDataFromVendor { get; init; }
 
-  public OBSVendorResponse() { }
+  public VendorResponse() { }
 
   [SetsRequiredMembers]
-  public OBSVendorResponse(OBSRequest req, JsonObject obj) : base(req, obj)
+  public VendorResponse(OBSRequest req, JsonObject obj) : base(req, obj)
   {
     VendorName = (string)GetNode("vendorName")!;
     RequestTypeFromVendor = (string)GetNode("requestType")!;
