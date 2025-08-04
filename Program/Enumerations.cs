@@ -178,20 +178,13 @@ public enum SubscriptionRequired
 
 public enum OBSMediaInputAction
 {
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")]
-  None,
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")]
-  Play,
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")]
-  Pause,
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")]
-  Stop,
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")]
-  Restart,
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")]
-  Next,
-  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")]
-  Previous
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NONE")] None,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY")] Play,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE")] Pause,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP")] Stop,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART")] Restart,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT")] Next,
+  [StringValue("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS")] Previous
 }
 
 public static class OBSMediaInputActions
@@ -205,24 +198,15 @@ public static class OBSMediaInputActions
 
 public enum OBSOutputState
 {
-  [StringValue("OBS_WEBSOCKET_OUTPUT_UNKNOWN")]
-  Unknown,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_STARTING")]
-  Starting,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_STARTED")]
-  Started,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_STOPPING")]
-  Stopping,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_STOPPED")]
-  Stopped,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_RECONNECTING")]
-  Reconnecting,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_RECONNECTED")]
-  Reconnected,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_PAUSED")]
-  Paused,
-  [StringValue("OBS_WEBSOCKET_OUTPUT_RESUMED")]
-  Resumed
+  [StringValue("OBS_WEBSOCKET_OUTPUT_UNKNOWN")] Unknown,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STARTING")] Starting,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STARTED")] Started,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STOPPING")] Stopping,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_STOPPED")] Stopped,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_RECONNECTING")] Reconnecting,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_RECONNECTED")] Reconnected,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_PAUSED")] Paused,
+  [StringValue("OBS_WEBSOCKET_OUTPUT_RESUMED")] Resumed
 }
 
 public static class OBSOutputStates
@@ -236,20 +220,13 @@ public static class OBSOutputStates
 
 public enum SceneItemBlendMode
 {
-  [StringValue("OBS_BLEND_NORMAL")]
-  Normal,
-  [StringValue("OBS_BLEND_ADDITIVE")]
-  Additive,
-  [StringValue("OBS_BLEND_SUBTRACT")]
-  Subtract,
-  [StringValue("OBS_BLEND_SCREEN")]
-  Screen,
-  [StringValue("OBS_BLEND_MULTIPLY")]
-  Multiply,
-  [StringValue("OBS_BLEND_LIGHTEN")]
-  Lighten,
-  [StringValue("OBS_BLEND_DARKEN")]
-  Darken
+  [StringValue("OBS_BLEND_NORMAL")] Normal,
+  [StringValue("OBS_BLEND_ADDITIVE")] Additive,
+  [StringValue("OBS_BLEND_SUBTRACT")] Subtract,
+  [StringValue("OBS_BLEND_SCREEN")] Screen,
+  [StringValue("OBS_BLEND_MULTIPLY")] Multiply,
+  [StringValue("OBS_BLEND_LIGHTEN")] Lighten,
+  [StringValue("OBS_BLEND_DARKEN")] Darken
 }
 
 public static class SceneItemBlendModes
@@ -263,20 +240,13 @@ public static class SceneItemBlendModes
 
 public enum BoundingBoxType
 {
-  [StringValue("OBS_BOUNDS_NONE")]
-  NoBounds,
-  [StringValue("OBS_BOUNDS_STRETCH")]
-  StretchToBounds,
-  [StringValue("OBS_BOUNDS_SCALE_INNER")]
-  ScaleToInnerBounds,
-  [StringValue("OBS_BOUNDS_SCALE_OUTER")]
-  ScaleToOuterBounds,
-  [StringValue("OBS_BOUNDS_SCALE_TO_WIDTH")]
-  ScaleToWidthOfBounds,
-  [StringValue("OBS_BOUNDS_SCALE_TO_HEIGHT")]
-  ScaleToHeightOfBounds,
-  [StringValue("OBS_BOUNDS_MAX_ONLY")]
-  MaximumSizeOnly
+  [StringValue("OBS_BOUNDS_NONE")] NoBounds,
+  [StringValue("OBS_BOUNDS_STRETCH")] StretchToBounds,
+  [StringValue("OBS_BOUNDS_SCALE_INNER")] ScaleToInnerBounds,
+  [StringValue("OBS_BOUNDS_SCALE_OUTER")] ScaleToOuterBounds,
+  [StringValue("OBS_BOUNDS_SCALE_TO_WIDTH")] ScaleToWidthOfBounds,
+  [StringValue("OBS_BOUNDS_SCALE_TO_HEIGHT")] ScaleToHeightOfBounds,
+  [StringValue("OBS_BOUNDS_MAX_ONLY")] MaximumSizeOnly
 }
 
 public static class BoundingBoxTypes
@@ -290,14 +260,10 @@ public static class BoundingBoxTypes
 
 public enum SourceType
 {
-  [StringValue("OBS_SOURCE_TYPE_INPUT")]
-  Input,
-  [StringValue("OBS_SOURCE_TYPE_SCENE")]
-  Scene,
-  [StringValue("OBS_SOURCE_TYPE_FILTER")]
-  Filter,
-  [StringValue("OBS_SOURCE_TYPE_TRANSITION")]
-  Transition
+  [StringValue("OBS_SOURCE_TYPE_INPUT")] Input,
+  [StringValue("OBS_SOURCE_TYPE_SCENE")] Scene,
+  [StringValue("OBS_SOURCE_TYPE_FILTER")] Filter,
+  [StringValue("OBS_SOURCE_TYPE_TRANSITION")] Transition
 }
 
 public static class SourceTypes
@@ -311,12 +277,9 @@ public static class SourceTypes
 
 public enum MonitoringType
 {
-  [StringValue("OBS_MONITORING_TYPE_NONE")]
-  None,
-  [StringValue("OBS_MONITORING_TYPE_MONITOR_ONLY")]
-  MonitorOnlyMuteOutput,
-  [StringValue("OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT")]
-  MonitorAndOutput
+  [StringValue("OBS_MONITORING_TYPE_NONE")] None,
+  [StringValue("OBS_MONITORING_TYPE_MONITOR_ONLY")] MonitorOnlyMuteOutput,
+  [StringValue("OBS_MONITORING_TYPE_MONITOR_AND_OUTPUT")] MonitorAndOutput
 }
 
 public static class MonitoringTypes
@@ -330,10 +293,8 @@ public static class MonitoringTypes
 
 public enum OBSWebsocketDataRealm
 {
-  [StringValue("OBS_WEBSOCKET_DATA_REALM_GLOBAL")]
-  Global,
-  [StringValue("OBS_WEBSOCKET_DATA_REALM_PROFILE")]
-  Profile
+  [StringValue("OBS_WEBSOCKET_DATA_REALM_GLOBAL")] Global,
+  [StringValue("OBS_WEBSOCKET_DATA_REALM_PROFILE")] Profile
 }
 
 public static class OBSWebsocketDataRealms
