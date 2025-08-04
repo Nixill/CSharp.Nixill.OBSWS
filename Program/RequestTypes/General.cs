@@ -95,13 +95,13 @@ public class OBSVersionInfo : OBSRequestResult
   [SetsRequiredMembers]
   public OBSVersionInfo(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    OBSVersion = (string)GetRequiredNode("obsVersion")!;
-    OBSWebSocketVersion = (string)GetRequiredNode("obsWebSocketVersion")!;
-    RPCVersion = (int)GetRequiredNode("rpcVersion");
-    AvailableRequests = ((JsonArray)GetRequiredNode("availableRequests")).Select(x => (string)x!).ToArray();
-    SupportedImageFormats = ((JsonArray)GetRequiredNode("supportedImageFormats")).Select(x => (string)x!).ToArray();
-    Platform = (string)GetRequiredNode("platform")!;
-    PlatformDescription = (string)GetRequiredNode("platformDescription")!;
+    OBSVersion = (string)GetNode("obsVersion")!;
+    OBSWebSocketVersion = (string)GetNode("obsWebSocketVersion")!;
+    RPCVersion = (int)GetNode("rpcVersion");
+    AvailableRequests = ((JsonArray)GetNode("availableRequests")).Select(x => (string)x!).ToArray();
+    SupportedImageFormats = ((JsonArray)GetNode("supportedImageFormats")).Select(x => (string)x!).ToArray();
+    Platform = (string)GetNode("platform")!;
+    PlatformDescription = (string)GetNode("platformDescription")!;
   }
 }
 
@@ -124,17 +124,17 @@ public class OBSStatsInfo : OBSRequestResult
   [SetsRequiredMembers]
   public OBSStatsInfo(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    CPUUsage = (double)GetRequiredNode("cpuUsage");
-    MemoryUsage = (double)GetRequiredNode("memoryUsage");
-    AvailableDiskSpace = (double)GetRequiredNode("availableDiskSpace");
-    ActiveFPS = (double)GetRequiredNode("activeFps");
-    AverageFrameRenderTime = (double)GetRequiredNode("averageFrameRenderTime");
-    RenderSkippedFrames = (int)GetRequiredNode("renderSkippedFrames");
-    RenderTotalFrames = (int)GetRequiredNode("renderTotalFrames");
-    OutputSkippedFrames = (int)GetRequiredNode("outputSkippedFrames");
-    OutputTotalFrames = (int)GetRequiredNode("outputTotalFrames");
-    WebSocketSessionIncomingMessages = (int)GetRequiredNode("webSocketSessionIncomingMessages");
-    WebSocketSessionOutgoingMessages = (int)GetRequiredNode("webSocketSessionOutgoingMessages");
+    CPUUsage = (double)GetNode("cpuUsage");
+    MemoryUsage = (double)GetNode("memoryUsage");
+    AvailableDiskSpace = (double)GetNode("availableDiskSpace");
+    ActiveFPS = (double)GetNode("activeFps");
+    AverageFrameRenderTime = (double)GetNode("averageFrameRenderTime");
+    RenderSkippedFrames = (int)GetNode("renderSkippedFrames");
+    RenderTotalFrames = (int)GetNode("renderTotalFrames");
+    OutputSkippedFrames = (int)GetNode("outputSkippedFrames");
+    OutputTotalFrames = (int)GetNode("outputTotalFrames");
+    WebSocketSessionIncomingMessages = (int)GetNode("webSocketSessionIncomingMessages");
+    WebSocketSessionOutgoingMessages = (int)GetNode("webSocketSessionOutgoingMessages");
   }
 }
 
@@ -149,9 +149,9 @@ public class OBSVendorResponse : OBSRequestResult
   [SetsRequiredMembers]
   public OBSVendorResponse(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    VendorName = (string)GetRequiredNode("vendorName")!;
-    RequestTypeFromVendor = (string)GetRequiredNode("requestType")!;
-    ResponseDataFromVendor = (JsonObject)GetRequiredNode("responseData");
+    VendorName = (string)GetNode("vendorName")!;
+    RequestTypeFromVendor = (string)GetNode("requestType")!;
+    ResponseDataFromVendor = (JsonObject)GetNode("responseData");
   }
 }
 

@@ -24,7 +24,7 @@ public class OBSRequestResult
   }
 
   [return: NotNull]
-  protected JsonNode GetRequiredNode(string node)
+  protected JsonNode GetNode(string node)
   {
     return ResponseData![node] ?? throw new MissingFieldException(node);
   }

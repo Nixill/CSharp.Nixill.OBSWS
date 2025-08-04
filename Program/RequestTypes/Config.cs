@@ -187,8 +187,8 @@ public static partial class OBSRequests
     [SetsRequiredMembers]
     public OBSSceneCollectionList(OBSRequest req, JsonObject obj) : base(req, obj)
     {
-      CurrentSceneCollectionName = (string)GetRequiredNode("currentSceneCollectionName")!;
-      SceneCollections = GetRequiredNode("sceneCollections").ToStringArray();
+      CurrentSceneCollectionName = (string)GetNode("currentSceneCollectionName")!;
+      SceneCollections = GetNode("sceneCollections").ToStringArray();
     }
   }
 
@@ -202,8 +202,8 @@ public static partial class OBSRequests
     [SetsRequiredMembers]
     public OBSProfileList(OBSRequest req, JsonObject obj) : base(req, obj)
     {
-      CurrentProfileName = (string)GetRequiredNode("currentProfileName")!;
-      Profiles = GetRequiredNode("profiles").ToStringArray();
+      CurrentProfileName = (string)GetNode("currentProfileName")!;
+      Profiles = GetNode("profiles").ToStringArray();
     }
   }
 
@@ -217,8 +217,8 @@ public static partial class OBSRequests
     [SetsRequiredMembers]
     public OBSProfileParameter(OBSRequest req, JsonObject obj) : base(req, obj)
     {
-      Value = (string?)GetRequiredNode("parameterValue");
-      DefaultValue = (string?)GetRequiredNode("defaultParameterValue");
+      Value = (string?)GetNode("parameterValue");
+      DefaultValue = (string?)GetNode("defaultParameterValue");
     }
   }
 
@@ -237,12 +237,12 @@ public static partial class OBSRequests
     [SetsRequiredMembers]
     public OBSVideoSettings(OBSRequest req, JsonObject obj) : base(req, obj)
     {
-      FPSNumerator = (int)GetRequiredNode("fpsNumerator");
-      FPSDenominator = (int)GetRequiredNode("fpsDenominator");
-      BaseWidth = (int)GetRequiredNode("baseWidth");
-      BaseHeight = (int)GetRequiredNode("baseHeight");
-      OutputWidth = (int)GetRequiredNode("outputWidth");
-      OutputHeight = (int)GetRequiredNode("outputHeight");
+      FPSNumerator = (int)GetNode("fpsNumerator");
+      FPSDenominator = (int)GetNode("fpsDenominator");
+      BaseWidth = (int)GetNode("baseWidth");
+      BaseHeight = (int)GetNode("baseHeight");
+      OutputWidth = (int)GetNode("outputWidth");
+      OutputHeight = (int)GetNode("outputHeight");
     }
   }
 
@@ -256,8 +256,8 @@ public static partial class OBSRequests
     [SetsRequiredMembers]
     public OBSStreamServiceSettings(OBSRequest req, JsonObject obj) : base(req, obj)
     {
-      StreamServiceType = (string)GetRequiredNode("streamServiceType")!;
-      StreamServiceSettings = (JsonObject)GetRequiredNode("streamServiceSettings");
+      StreamServiceType = (string)GetNode("streamServiceType")!;
+      StreamServiceSettings = (JsonObject)GetNode("streamServiceSettings");
     }
   }
 }

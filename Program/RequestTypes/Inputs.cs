@@ -152,8 +152,8 @@ public class InputSettingsResult : OBSRequestResult
   [SetsRequiredMembers]
   public InputSettingsResult(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    InputSettings = (JsonObject)GetRequiredNode("inputSettings");
-    InputKind = (string)GetRequiredNode("inputKind")!;
+    InputSettings = (JsonObject)GetNode("inputSettings");
+    InputKind = (string)GetNode("inputKind")!;
   }
 }
 

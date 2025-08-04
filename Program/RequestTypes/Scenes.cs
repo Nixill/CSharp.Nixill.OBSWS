@@ -123,11 +123,11 @@ public class OBSSceneList : OBSRequestResult, IEnumerable<SceneInfo>
   [SetsRequiredMembers]
   public OBSSceneList(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    CurrentProgramSceneName = (string?)GetRequiredNode("currentProgramSceneName");
-    CurrentProgramSceneUuid = (string?)GetRequiredNode("currentProgramSceneUuid");
-    CurrentPreviewSceneName = (string?)GetRequiredNode("currentPreviewSceneName");
-    CurrentPreviewSceneUuid = (string?)GetRequiredNode("currentPreviewSceneUuid");
-    Scenes = [.. ((JsonArray)GetRequiredNode("scenes")).Select(n => new SceneInfo(n!))];
+    CurrentProgramSceneName = (string?)GetNode("currentProgramSceneName");
+    CurrentProgramSceneUuid = (string?)GetNode("currentProgramSceneUuid");
+    CurrentPreviewSceneName = (string?)GetNode("currentPreviewSceneName");
+    CurrentPreviewSceneUuid = (string?)GetNode("currentPreviewSceneUuid");
+    Scenes = [.. ((JsonArray)GetNode("scenes")).Select(n => new SceneInfo(n!))];
   }
 
   public IEnumerator<SceneInfo> GetEnumerator() => ((IEnumerable<SceneInfo>)Scenes).GetEnumerator();
@@ -172,8 +172,8 @@ public class CurrentScene : OBSRequestResult
   [SetsRequiredMembers]
   public CurrentScene(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    Name = (string)GetRequiredNode("sceneName")!;
-    Uuid = (string)GetRequiredNode("sceneUuid")!;
+    Name = (string)GetNode("sceneName")!;
+    Uuid = (string)GetNode("sceneUuid")!;
   }
 }
 
@@ -187,7 +187,7 @@ public class OBSSceneTransitionOverride : OBSRequestResult
   [SetsRequiredMembers]
   public OBSSceneTransitionOverride(OBSRequest req, JsonObject obj) : base(req, obj)
   {
-    TransitionName = (string?)GetRequiredNode("transitionName");
-    TransitionDuration = (int?)GetRequiredNode("transitionDuration");
+    TransitionName = (string?)GetNode("transitionName");
+    TransitionDuration = (int?)GetNode("transitionDuration");
   }
 }
