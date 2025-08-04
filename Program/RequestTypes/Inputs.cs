@@ -23,10 +23,48 @@ public static partial class OBSRequests
         RequestData = new JsonObject { ["unversioned"] = unversioned }
       };
 
-    // GetSpecialInputs
-    // CreateInput
-    // RemoveInput
-    // SetInputName
+    public static OBSRequest<SpecialInputs> GetSpecialInputs()
+      => new OBSRequest<SpecialInputs>
+      {
+        CastResult = (r, d) => new SpecialInputs(r, d),
+        RequestType = "GetSpecialInputs"
+      };
+
+    public static OBSRequest<NewInput> CreateInput(ID sceneID, string inputName, string inputKind,
+      JsonObject? inputSettings = null, bool sceneItemEnabled = true)
+      => new OBSRequest<NewInput>
+      {
+        CastResult = (r, d) => new NewInput(r, d),
+        RequestType = "CreateInput",
+        RequestData = (JsonObject)new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["inputName"] = inputName,
+          ["inputKind"] = inputKind,
+          ["sceneItemEnabled"] = sceneItemEnabled
+        }.WithValueIfNotNull("inputSettings", inputSettings)
+      };
+
+    public static OBSVoidRequest RemoveInput(ID inputID)
+      => new OBSVoidRequest
+      {
+        RequestType = "RemoveInput",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value
+        }
+      };
+
+    public static OBSVoidRequest SetInputName(ID inputID, string newInputName)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputName",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["newInputName"] = newInputName
+        }
+      };
 
     public static OBSRequest<OBSSingleValueResult<JsonObject>> GetInputDefaultSettings(string inputKind)
       => new OBSRequest<OBSSingleValueResult<JsonObject>>
@@ -62,15 +100,95 @@ public static partial class OBSRequests
         }
       };
 
-    // GetInputMute
-    // SetInputMute
-    // ToggleInputMute
-    // GetInputVolume
-    // SetInputVolume
-    // GetInputAudioBalance
-    // SetInputAudioBalance
-    // GetInputAudioSyncOffset
-    // SetInputAudioSyncOffset
+    public static OBSRequest<OBSSingleValueResult<bool>> GetInputMute(ID inputID)
+      => new OBSRequest<OBSSingleValueResult<bool>>
+      {
+        CastResult = ResultCasts.Bool,
+        RequestType = "GetInputMute",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value
+        }
+      };
+
+    public static OBSVoidRequest SetInputMute(ID inputID, bool inputMuted)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputMute",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["inputMuted"] = inputMuted
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<bool>> ToggleInputMute(ID inputID)
+      => new OBSRequest<OBSSingleValueResult<bool>>
+      {
+        CastResult = ResultCasts.Bool,
+        RequestType = "ToggleInputMute",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value
+        }
+      };
+
+    public static OBSRequest<InputVolumes> GetInputVolume(ID inputID)
+      => new OBSRequest<InputVolumes>
+      {
+        CastResult = (r, d) => new InputVolumes(r, d),
+        RequestType = "GetInputVolume",
+        RequestData = [inputID.KVPOf("input")]
+      };
+
+    public static OBSVoidRequest SetInputVolume(ID inputID, VolumeLevel level)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputVolume",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["inputVolumeDb"] = level.Decibels
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<double>> GetInputAudioBalance(ID inputID)
+      => new OBSRequest<OBSSingleValueResult<double>>
+      {
+        CastResult = ResultCasts.Double,
+        RequestType = "GetInputAudioBalance",
+        RequestData = [inputID.KVPOf("input")]
+      };
+
+    public static OBSVoidRequest SetInputAudioBalance(ID inputID, double balance)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputAudioBalance",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["inputAudioBalance"] = balance
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<double>> GetInputAudioSyncOffset(ID inputID)
+      => new OBSRequest<OBSSingleValueResult<double>>
+      {
+        CastResult = ResultCasts.Double,
+        RequestType = "GetInputAudioSyncOffset",
+        RequestData = [inputID.KVPOf("input")]
+      };
+
+    public static OBSVoidRequest SetInputAudioSyncOffset(ID inputID, double offset)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputAudioBalance",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["inputAudioSyncOffset"] = offset
+        }
+      };
 
     public static OBSRequest<OBSSingleValueResult<MonitoringType>> GetInputAudioMonitorType(ID inputID)
       => new OBSRequest<OBSSingleValueResult<MonitoringType>>
@@ -88,8 +206,9 @@ public static partial class OBSRequests
         RequestType = "SetInputAudioMonitorType",
         RequestData = new JsonObject
         {
+          [$"input{inputID.Key}"] = inputID.Value,
           ["monitorType"] = newType.GetIdentifierValue()
-        }.AddID(inputID, "input")
+        }
       };
 
     public static OBSRequest<InputAudioTracks> GetInputAudioTracks(ID inputID)
@@ -97,9 +216,7 @@ public static partial class OBSRequests
       {
         CastResult = (r, o) => new InputAudioTracks(r, o),
         RequestType = "GetInputAudioTracks",
-        RequestData = new JsonObject {
-          inputID.KVPOf("input")
-        }
+        RequestData = [inputID.KVPOf("input")]
       };
 
     public static OBSVoidRequest SetInputAudioTracks(ID inputID, IDictionary<string, bool> tracks)
@@ -113,8 +230,67 @@ public static partial class OBSRequests
         }.AddID(inputID, "input")
       };
 
-    // GetInputPropertiesListPropertyItems
-    // PressInputPropertiesButton
+    public static OBSRequest<OBSSingleValueResult<DeinterlaceMode>> GetInputDeinterlaceMode(ID inputID)
+      => new OBSRequest<OBSSingleValueResult<DeinterlaceMode>>
+      {
+        CastResult = ResultCasts.SingleValue(n => DeinterlaceModes.ForIdentifierValue((string)n!)),
+        RequestType = "GetInputDeinterlaceMode",
+        RequestData = [inputID.KVPOf("input")]
+      };
+
+    public static OBSVoidRequest SetInputDeinterlaceMode(ID inputID, DeinterlaceMode mode)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputDeinterlaceMode",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["inputDeinterlaceMode"] = mode.GetIdentifierValue()
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<DeinterlaceFieldOrder>> GetInputDeinterlaceFieldOrder(ID inputID)
+      => new OBSRequest<OBSSingleValueResult<DeinterlaceFieldOrder>>
+      {
+        CastResult = ResultCasts.SingleValue(n => DeinterlaceFieldOrders.ForIdentifierValue((string)n!)),
+        RequestType = "GetInputDeinterlaceFieldOrder",
+        RequestData = [inputID.KVPOf("input")]
+      };
+
+    public static OBSVoidRequest SetInputDeinterlaceFieldOrder(ID inputID, DeinterlaceFieldOrder fieldOrder)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetInputDeinterlaceFieldOrder",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["inputDeinterlaceFieldOrder"] = fieldOrder.GetIdentifierValue()
+        }
+      };
+
+    public static OBSRequest<OBSListResult<PropertyItem>> GetInputPropertiesListPropertyItems(ID inputID,
+      string propertyName)
+      => new OBSRequest<OBSListResult<PropertyItem>>
+      {
+        CastResult = ResultCasts.List(n => new PropertyItem(n)),
+        RequestType = "GetInputPropertiesListPropertyItems",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["propertyName"] = propertyName
+        }
+      };
+
+    public static OBSVoidRequest PressInputPropertiesButton(ID inputID, string propertyName)
+      => new OBSVoidRequest
+      {
+        RequestType = "PressInputPropertiesButton",
+        RequestData = new JsonObject
+        {
+          [$"input{inputID.Key}"] = inputID.Value,
+          ["propertyName"] = propertyName
+        }
+      };
   }
 }
 
@@ -142,6 +318,45 @@ public class OBSInput
   }
 }
 
+public class SpecialInputs : OBSRequestResult
+{
+  public required string? Desktop1 { get; init; }
+  public required string? Desktop2 { get; init; }
+  public required string? Mic1 { get; init; }
+  public required string? Mic2 { get; init; }
+  public required string? Mic3 { get; init; }
+  public required string? Mic4 { get; init; }
+
+  public SpecialInputs() { }
+
+  [SetsRequiredMembers]
+  public SpecialInputs(OBSRequest req, JsonObject obj) : base(req, obj)
+  {
+    Desktop1 = (string?)GetNode("desktop1");
+    Desktop2 = (string?)GetNode("desktop2");
+    Mic1 = (string?)GetNode("mic1");
+    Mic2 = (string?)GetNode("mic2");
+    Mic3 = (string?)GetNode("mic3");
+    Mic4 = (string?)GetNode("mic4");
+  }
+}
+
+public class NewInput : OBSRequestResult
+{
+  public required string InputUuid { get; init; }
+  public Guid InputGuid => Guid.Parse(InputUuid);
+  public required int SceneItemID { get; init; }
+
+  public NewInput() { }
+
+  [SetsRequiredMembers]
+  public NewInput(OBSRequest req, JsonObject obj) : base(req, obj)
+  {
+    InputUuid = (string)GetNode("inputUuid")!;
+    SceneItemID = (int)GetNode("sceneItemId");
+  }
+}
+
 public class InputSettings : OBSRequestResult
 {
   public required JsonObject Settings { get; init; }
@@ -157,6 +372,47 @@ public class InputSettings : OBSRequestResult
   }
 }
 
+public class InputVolumes : OBSRequestResult
+{
+  public required VolumeLevel Level { get; init; }
+
+  public InputVolumes() { }
+
+  [SetsRequiredMembers]
+  public InputVolumes(OBSRequest req, JsonObject obj) : base(req, obj)
+  {
+    Level = VolumeLevel.FromDecibels((double)GetNode("inputVolumeDb"));
+  }
+}
+
+public readonly struct VolumeLevel
+{
+  private readonly double _db;
+
+  public double Decibels
+  {
+    get => _db;
+    init => _db = Math.Clamp(value, -100, 26);
+  }
+  public static VolumeLevel FromDecibels(double db) => new VolumeLevel { Decibels = db };
+
+  public double Multiplier
+  {
+    get => (_db == -100) ? 0 : Math.Pow(10, _db / 20);
+    init => _db = (value <= 0) ? -100
+      : Math.Clamp(20 * Math.Log10(value), -100, 26);
+  }
+  public static VolumeLevel FromMultiplier(double mul) => new VolumeLevel { Multiplier = mul };
+
+  public double Percent
+  {
+    get => (_db == -100) ? 0 : Math.Pow(10, _db / 20 + 2);
+    init => _db = (value <= 0) ? -100
+      : Math.Clamp(20 * (Math.Log10(value) - 2), -100, 26);
+  }
+  public static VolumeLevel FromPercent(double pct) => new VolumeLevel { Percent = pct };
+}
+
 public class InputAudioTracks : OBSRequestResult
 {
   public required Dictionary<string, bool> AudioTracks { get; init; }
@@ -169,5 +425,22 @@ public class InputAudioTracks : OBSRequestResult
     AudioTracks = ((JsonObject)GetNode("inputAudioTracks"))
       .Select(kvp => (kvp.Key, (bool)kvp.Value!))
       .ToDictionary();
+  }
+}
+
+public class PropertyItem
+{
+  public required bool Enabled { get; init; }
+  public required string Name { get; init; }
+  public required JsonNode? Value { get; init; }
+
+  public PropertyItem() { }
+
+  [SetsRequiredMembers]
+  public PropertyItem(JsonNode n)
+  {
+    Enabled = (bool)n["itemEnabled"]!;
+    Name = (string)n["itemName"]!;
+    Value = n["itemValue"];
   }
 }

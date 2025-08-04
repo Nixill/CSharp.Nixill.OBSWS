@@ -306,6 +306,43 @@ public static class OBSWebsocketDataRealms
     => StringValueAttribute.FindValue<OBSWebsocketDataRealm>(value);
 }
 
+public enum DeinterlaceMode
+{
+  [StringValue("OBS_DEINTERLACE_MODE_DISABLE")] Disable,
+  [StringValue("OBS_DEINTERLACE_MODE_DISCARD")] Discard,
+  [StringValue("OBS_DEINTERLACE_MODE_RETRO")] Retro,
+  [StringValue("OBS_DEINTERLACE_MODE_BLEND")] Blend,
+  [StringValue("OBS_DEINTERLACE_MODE_BLEND_2X")] Blend2x,
+  [StringValue("OBS_DEINTERLACE_MODE_LINEAR")] Linear,
+  [StringValue("OBS_DEINTERLACE_MODE_LINEAR_2X")] Linear2x,
+  [StringValue("OBS_DEINTERLACE_MODE_YADIF")] Yadif,
+  [StringValue("OBS_DEINTERLACE_MODE_YADIF_2X")] Yadif2x
+}
+
+public static class DeinterlaceModes
+{
+  public static string GetIdentifierValue(this DeinterlaceMode mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static DeinterlaceMode ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<DeinterlaceMode>(value);
+}
+
+public enum DeinterlaceFieldOrder
+{
+  [StringValue("OBS_DEINTERLACE_FIELD_ORDER_TOP")] Top,
+  [StringValue("OBS_DEINTERLACE_FIELD_ORDER_BOTTOM")] Bottom
+}
+
+public static class DeinterlaceFieldOrders
+{
+  public static string GetIdentifierValue(this DeinterlaceFieldOrder mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static DeinterlaceFieldOrder ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<DeinterlaceFieldOrder>(value);
+}
+
 [AttributeUsage(AttributeTargets.Field)]
 public class StringValueAttribute : Attribute
 {

@@ -147,6 +147,8 @@ public static class ResultCasts
   public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<int?>> NullableInt = SingleValue(n => (int?)n);
   public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<JsonNode>> Node = SingleValue(n => n);
   public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<JsonObject>> Object = SingleValue(n => (JsonObject)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<double>> Double = SingleValue(n => (double)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<double?>> NullableDouble = SingleValue(n => (double?)n);
 
   public static Func<OBSRequest, JsonObject, OBSListResult<T>> List<T>(Func<JsonNode, T> innerCastFunc)
     => (req, obj) => new OBSListResult<T>(req, obj, innerCastFunc);
