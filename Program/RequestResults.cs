@@ -49,9 +49,6 @@ public class OBSSingleValueResult<T> : OBSRequestResult
   }
 
   public static implicit operator T(OBSSingleValueResult<T> result) => result.Result;
-
-  public static Func<OBSRequest, JsonObject, OBSSingleValueResult<T>> CastFunc(Func<JsonNode, T> innerCastFunc)
-    => (req, obj) => new OBSSingleValueResult<T>(req, obj, innerCastFunc);
 }
 
 public class OBSListResult<T> : OBSRequestResult, IEnumerable<T>
@@ -74,9 +71,6 @@ public class OBSListResult<T> : OBSRequestResult, IEnumerable<T>
 
   public IEnumerator<T> GetEnumerator() => Results.GetEnumerator();
   IEnumerator IEnumerable.GetEnumerator() => Results.GetEnumerator();
-
-  public static Func<OBSRequest, JsonObject, OBSListResult<T>> CastFunc(Func<JsonNode, T> innerCastFunc)
-    => (req, obj) => new OBSListResult<T>(req, obj, innerCastFunc);
 }
 
 public class OBSRequestBatchResult : IEnumerable<OBSRequestResponse>
@@ -138,6 +132,15 @@ public class OBSRequestResponse
     else
       RequestResult = null;
   }
+}
+
+public static class ResultCasts
+{
+  public static Func<OBSRequest, JsonObject, OBSSingleValueResult<T>> SingleValue<T>(Func<JsonNode, T> innerCastFunc)
+    => (req, obj) => new OBSSingleValueResult<T>(req, obj, innerCastFunc);
+
+  public static Func<OBSRequest, JsonObject, OBSListResult<T>> List<T>(Func<JsonNode, T> innerCastFunc)
+    => (req, obj) => new OBSListResult<T>(req, obj, innerCastFunc);
 }
 
 internal static class JsonExtensions

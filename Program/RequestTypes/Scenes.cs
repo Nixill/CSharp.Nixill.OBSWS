@@ -55,7 +55,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<string>> CreateScene(string name)
       => new OBSRequest<OBSSingleValueResult<string>>
       {
-        CastResult = OBSSingleValueResult<string>.CastFunc(n => (string)n!),
+        CastResult = ResultCasts.SingleValue(n => (string)n!),
         RequestType = "CreateScene",
         RequestData = new JsonObject
         {

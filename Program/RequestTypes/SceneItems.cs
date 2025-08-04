@@ -10,7 +10,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSListResult<SceneItem>> GetSceneItemList(ID sceneID)
       => new OBSRequest<OBSListResult<SceneItem>>
       {
-        CastResult = OBSListResult<SceneItem>.CastFunc(o => new((JsonObject)o)),
+        CastResult = ResultCasts.List(o => new SceneItem((JsonObject)o)),
         RequestType = "GetSceneItemList",
         RequestData = new JsonObject
         {
@@ -23,7 +23,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<int>> GetSceneItemId(ID sceneID, string sourceName, int searchOffset = 0)
       => new OBSRequest<OBSSingleValueResult<int>>
       {
-        CastResult = OBSSingleValueResult<int>.CastFunc(n => (int)n),
+        CastResult = ResultCasts.SingleValue(n => (int)n),
         RequestType = "GetSceneItemId",
         RequestData = new JsonObject
         {
@@ -41,7 +41,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<SceneItemTransform>> GetSceneItemTransform(ID sceneID, int sceneItemID)
       => new OBSRequest<OBSSingleValueResult<SceneItemTransform>>
       {
-        CastResult = OBSSingleValueResult<SceneItemTransform>.CastFunc(n => new SceneItemTransform((JsonObject)n)),
+        CastResult = ResultCasts.SingleValue(n => new SceneItemTransform((JsonObject)n)),
         RequestType = "GetSceneItemTransform",
         RequestData = new JsonObject
         {

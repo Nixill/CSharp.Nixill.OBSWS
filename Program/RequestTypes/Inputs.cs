@@ -10,7 +10,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSListResult<OBSInput>> GetInputList(string? inputKind = null)
       => new OBSRequest<OBSListResult<OBSInput>>
       {
-        CastResult = OBSListResult<OBSInput>.CastFunc(o => new OBSInput((JsonObject)o)),
+        CastResult = ResultCasts.List(o => new OBSInput((JsonObject)o)),
         RequestType = "GetInputList",
         RequestData = (JsonObject)new JsonObject().WithValueIf("inputKind", inputKind, inputKind != null)
       };
@@ -18,7 +18,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSListResult<string>> GetInputKindList(bool unversioned = false)
       => new OBSRequest<OBSListResult<string>>
       {
-        CastResult = OBSListResult<string>.CastFunc(n => (string)n!),
+        CastResult = ResultCasts.List(n => (string)n!),
         RequestType = "GetInputKindList",
         RequestData = new JsonObject { ["unversioned"] = unversioned }
       };
@@ -31,7 +31,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<JsonObject>> GetInputDefaultSettings(string inputKind)
       => new OBSRequest<OBSSingleValueResult<JsonObject>>
       {
-        CastResult = OBSSingleValueResult<JsonObject>.CastFunc(n => (JsonObject)n),
+        CastResult = ResultCasts.SingleValue(n => (JsonObject)n),
         RequestType = "GetInputDefaultSettings",
         RequestData = new JsonObject
         {
@@ -75,7 +75,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<MonitoringType>> GetInputAudioMonitorType(ID inputID)
       => new OBSRequest<OBSSingleValueResult<MonitoringType>>
       {
-        CastResult = OBSSingleValueResult<MonitoringType>.CastFunc(n => MonitoringTypes.ForIdentifierValue((string)n!)),
+        CastResult = ResultCasts.SingleValue(n => MonitoringTypes.ForIdentifierValue((string)n!)),
         RequestType = "GetInputAudioMonitorType",
         RequestData = new JsonObject {
           inputID.KVPOf("input")

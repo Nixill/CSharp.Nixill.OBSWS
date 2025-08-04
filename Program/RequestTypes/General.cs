@@ -46,7 +46,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSListResult<string>> GetHotkeyList()
       => new OBSRequest<OBSListResult<string>>
       {
-        CastResult = OBSListResult<string>.CastFunc(n => (string)n!),
+        CastResult = ResultCasts.List(n => (string)n!),
         RequestType = "GetHotkeyList"
       };
 

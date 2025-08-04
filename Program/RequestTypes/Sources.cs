@@ -22,7 +22,7 @@ public static partial class OBSRequests
       int? imageWidth = null, int? imageHeight = null, int imageCompressionQuality = -1)
       => new OBSRequest<OBSSingleValueResult<byte[]>>
       {
-        CastResult = OBSSingleValueResult<byte[]>.CastFunc(n => Convert.FromBase64String((string)n!)),
+        CastResult = ResultCasts.SingleValue(n => Convert.FromBase64String((string)n!)),
         RequestType = "GetSourceScreenshot",
         RequestData = (JsonObject)new JsonObject
         {
