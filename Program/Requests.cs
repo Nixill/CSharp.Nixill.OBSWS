@@ -13,6 +13,8 @@ public partial class OBSClient
 
   public async Task<OBSRequestResult> SendRequest(OBSRequest request, int timeout = 30)
   {
+    if (!IsIdentified) throw new InvalidOperationException("Cannot send requests when not identified.");
+
     await Task.Delay(0);
     string id = request.RequestID;
     TaskCompletionSource<OBSRequestResponse> dataTask = new();
@@ -51,6 +53,8 @@ public partial class OBSClient
 
   public Task SendRequestWithoutWaiting(OBSRequest request)
   {
+    if (!IsIdentified) throw new InvalidOperationException("Cannot send requests when not identified.");
+
     string id = request.RequestID;
     JsonObject requestJson = new JsonObject
     {
@@ -93,6 +97,8 @@ public partial class OBSClient
   // updating timeout for Sleeps
   public Task<OBSRequestBatchResult> SendBatchRequest(OBSRequestBatch requestBatch, int timeout = 15)
   {
+    if (!IsIdentified) throw new InvalidOperationException("Cannot send requests when not identified.");
+
     int millisTimeout = requestBatch
       .Where(r => r.RequestType == "Sleep")
       .Select(r => (int?)r.RequestData?["sleepMillis"] ?? 0)
@@ -132,6 +138,8 @@ public partial class OBSClient
   public void SendBatchRequestWithoutWaiting(OBSRequestBatch batchData, bool haltOnFailure = false,
     RequestBatchExecutionType executionType = RequestBatchExecutionType.SerialRealtime)
   {
+    if (!IsIdentified) throw new InvalidOperationException("Cannot send requests when not identified.");
+
     string id = Guid.NewGuid().ToString();
     TaskCompletionSource<OBSRequestBatchResult> dataTask = new();
     JsonObject request = new JsonObject

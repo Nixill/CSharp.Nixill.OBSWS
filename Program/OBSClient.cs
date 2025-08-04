@@ -5,10 +5,11 @@ using System.Text;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Websocket.Client;
+using Websocket.Client.Exceptions;
 
 namespace Nixill.OBSWS;
 
-public partial class OBSClient
+public partial class OBSClient : IDisposable
 {
   internal WebsocketClient Client;
   internal ILogger? Logger;
@@ -27,9 +28,9 @@ public partial class OBSClient
   ILoggerFactory? loggerFactory = null)
   {
     Client = new WebsocketClient(uri);
-    Client.ReconnectTimeout = TimeSpan.FromSeconds(15);
     Client.MessageReceived.Subscribe(msg => Task.Run(() => Dispatch(msg)));
     Client.DisconnectionHappened.Subscribe(InvokeDisconnect);
+    Client.IsReconnectionEnabled = false;
 
     Password = password;
     Logger = loggerFactory?.CreateLogger(typeof(OBSClient));
@@ -41,8 +42,16 @@ public partial class OBSClient
   public async Task ConnectAsync()
   {
     if (IdentifyWaitTask.Task.IsCompleted) IdentifyWaitTask = new();
-    await Client.StartOrFail();
-    IsConnected = true;
+    try
+    {
+      await Client.StartOrFail();
+    }
+    catch (WebsocketException)
+    {
+      await Client.Stop(WebSocketCloseStatus.InternalServerError, "Failed to connect");
+      throw;
+    }
+    IsConnected = Client.IsRunning;
   }
 
   public async Task<bool> WaitForIdentify()
@@ -90,10 +99,22 @@ public partial class OBSClient
   {
     OBSDisconnectedArgs args = new(info);
     Logger?.LogError($"Disconnected with code {args.Code} - {args.Comment ?? "(no comment)"}");
-
-    Disconnected?.Invoke(this, new OBSDisconnectedArgs(info));
     IsConnected = false;
     IsIdentified = false;
+
+    Disconnected?.Invoke(this, new OBSDisconnectedArgs(info));
+  }
+
+  bool _isDisposed = false;
+
+  public void Dispose()
+  {
+    if (!_isDisposed)
+    {
+      _isDisposed = true;
+      Client.Dispose();
+    }
+    GC.SuppressFinalize(this);
   }
 
   private async Task Dispatch(ResponseMessage msg)
