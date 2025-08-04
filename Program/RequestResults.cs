@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Nixill.OBSWS;
 
-
 public class OBSRequestResult
 {
   public required OBSRequest OriginalRequest { get; init; }
@@ -139,4 +138,9 @@ public class OBSRequestResponse
     else
       RequestResult = null;
   }
+}
+
+internal static class JsonExtensions
+{
+  public static string[] ToStringArray(this JsonNode node) => [.. ((JsonArray)node).Select(n => (string)n!)];
 }

@@ -174,17 +174,11 @@ public struct KeyModifiers
     };
 }
 
-public struct ID
+[method: SetsRequiredMembers]
+public readonly struct ID(string key, string value)
 {
-  public required string Key { get; init; }
-  public required string Value { get; init; }
-
-  [SetsRequiredMembers]
-  public ID(string key, string value)
-  {
-    Key = key;
-    Value = value;
-  }
+  public required string Key { get; init; } = key;
+  public required string Value { get; init; } = value;
 
   public bool Matches(string type, JsonObject o)
     => o[type + Key] != null && (string)o[type + Key]! == Value;
