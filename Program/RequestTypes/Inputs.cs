@@ -18,7 +18,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSListResult<string>> GetInputKindList(bool unversioned = false)
       => new OBSRequest<OBSListResult<string>>
       {
-        CastResult = ResultCasts.List(n => (string)n!),
+        CastResult = ResultCasts.StringList,
         RequestType = "GetInputKindList",
         RequestData = new JsonObject { ["unversioned"] = unversioned }
       };
@@ -31,7 +31,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<JsonObject>> GetInputDefaultSettings(string inputKind)
       => new OBSRequest<OBSSingleValueResult<JsonObject>>
       {
-        CastResult = ResultCasts.SingleValue(n => (JsonObject)n),
+        CastResult = ResultCasts.Object,
         RequestType = "GetInputDefaultSettings",
         RequestData = new JsonObject
         {

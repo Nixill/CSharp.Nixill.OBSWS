@@ -139,8 +139,19 @@ public static class ResultCasts
   public static Func<OBSRequest, JsonObject, OBSSingleValueResult<T>> SingleValue<T>(Func<JsonNode, T> innerCastFunc)
     => (req, obj) => new OBSSingleValueResult<T>(req, obj, innerCastFunc);
 
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<string>> String = SingleValue(n => (string)n!);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<string?>> NullableString = SingleValue(n => (string?)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<bool>> Bool = SingleValue(n => (bool)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<bool?>> NullableBool = SingleValue(n => (bool?)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<int>> Int = SingleValue(n => (int)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<int?>> NullableInt = SingleValue(n => (int?)n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<JsonNode>> Node = SingleValue(n => n);
+  public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<JsonObject>> Object = SingleValue(n => (JsonObject)n);
+
   public static Func<OBSRequest, JsonObject, OBSListResult<T>> List<T>(Func<JsonNode, T> innerCastFunc)
     => (req, obj) => new OBSListResult<T>(req, obj, innerCastFunc);
+
+  public static readonly Func<OBSRequest, JsonObject, OBSListResult<string>> StringList = List(n => (string)n!);
 }
 
 internal static class JsonExtensions

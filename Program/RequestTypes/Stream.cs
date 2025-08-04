@@ -17,7 +17,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<bool>> ToggleStream()
       => new OBSRequest<OBSSingleValueResult<bool>>
       {
-        CastResult = ResultCasts.SingleValue(n => (bool)n),
+        CastResult = ResultCasts.Bool,
         RequestType = "ToggleStream"
       };
 

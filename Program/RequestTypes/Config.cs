@@ -10,7 +10,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<JsonNode>> GetPersistentData(OBSWebsocketDataRealm realm, string slotName)
       => new OBSRequest<OBSSingleValueResult<JsonNode>>
       {
-        CastResult = ResultCasts.SingleValue(n => n),
+        CastResult = ResultCasts.Node,
         RequestType = "GetPersistentData",
         RequestData = new JsonObject
         {
@@ -162,7 +162,7 @@ public static partial class OBSRequests
     public static OBSRequest<OBSSingleValueResult<string>> GetRecordDirectory()
       => new OBSRequest<OBSSingleValueResult<string>>
       {
-        CastResult = ResultCasts.SingleValue(x => (string)x!),
+        CastResult = ResultCasts.String,
         RequestType = "GetRecordDirectory"
       };
 
