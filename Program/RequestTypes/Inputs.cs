@@ -5,7 +5,7 @@ namespace Nixill.OBSWS;
 
 public static partial class OBSRequests
 {
-  public static partial class Inputs
+  public static class Inputs
   {
     public static OBSRequest<OBSListResult<OBSInput>> GetInputList(string? inputKind = null)
       => new OBSRequest<OBSListResult<OBSInput>>
