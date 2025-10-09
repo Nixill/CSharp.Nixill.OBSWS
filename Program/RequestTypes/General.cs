@@ -36,11 +36,11 @@ public static partial class OBSRequests
       {
         CastResult = (r, d) => new VendorResponse(r, d),
         RequestType = "CallVendorRequest",
-        RequestData = (JsonObject)new JsonObject
+        RequestData = new JsonObject
         {
           ["vendorName"] = vendorName,
           ["requestType"] = requestType
-        }.WithValueIf("requestData", requestData, requestData != null)
+        }.WithValueIfNotNull("requestData", requestData)
       };
 
     public static OBSRequest<OBSListResult<string>> GetHotkeyList()
@@ -54,7 +54,7 @@ public static partial class OBSRequests
       => new OBSVoidRequest
       {
         RequestType = "TriggerHotkeyByName",
-        RequestData = (JsonObject)new JsonObject
+        RequestData = new JsonObject
         {
           ["hotkeyName"] = hotkeyName
         }.WithValueIfNotNull("contextName", contextName)
@@ -64,7 +64,7 @@ public static partial class OBSRequests
       => new OBSVoidRequest
       {
         RequestType = "TriggerHotkeyByKeySequence",
-        RequestData = (JsonObject)new JsonObject()
+        RequestData = new JsonObject()
           .WithValueIfNotNull("keyId", keyID)
           .WithValueIfNotNull("keyModifiers", keyModifiers?.ToJson())
       };
@@ -73,7 +73,7 @@ public static partial class OBSRequests
       => new OBSVoidRequest
       {
         RequestType = "Sleep",
-        RequestData = (JsonObject)new JsonObject()
+        RequestData = new JsonObject()
           .WithValueIf("sleepMillis", millis, millis != 0)
           .WithValueIf("sleepFrames", frames, frames != 0 && millis == 0)
       };

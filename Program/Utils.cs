@@ -2,17 +2,20 @@ using System.Text.Json.Nodes;
 
 namespace Nixill.OBSWS;
 
-internal static class Utils
+internal static class UtilExtensions
 {
   internal static JsonNode GetNode(this JsonObject obj, string key)
     => obj[key] ?? throw new MissingFieldException(key);
 
-  internal static IDictionary<K, V> WithValueIf<K, V>(this IDictionary<K, V> input, K key, V value, bool condition)
+  internal static JsonObject WithValueIf(this JsonObject input, string key, JsonNode value, bool condition)
   {
     if (condition) input[key] = value;
     return input;
   }
 
-  internal static IDictionary<K, V> WithValueIfNotNull<K, V>(this IDictionary<K, V> input, K key, V value)
-    => input.WithValueIf(key, value, value != null);
+  internal static JsonObject WithValueIfNotNull(this JsonObject input, string key, JsonNode? value)
+  {
+    if (value != null) input[key] = value;
+    return input;
+  }
 }

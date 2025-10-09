@@ -24,13 +24,13 @@ public static partial class OBSRequests
       {
         CastResult = ResultCasts.SingleValue(n => Convert.FromBase64String((string)n!)),
         RequestType = "GetSourceScreenshot",
-        RequestData = (JsonObject)new JsonObject
+        RequestData = new JsonObject
         {
           [$"source{sourceID.Key}"] = sourceID.Value,
           ["imageFormat"] = imageFormat,
           ["imageCompressionQuality"] = imageCompressionQuality
-        }.WithValueIf("imageWidth", imageWidth, imageWidth != null)
-        .WithValueIf("imageHeight", imageHeight, imageHeight != null)
+        }.WithValueIfNotNull("imageWidth", imageWidth)
+        .WithValueIfNotNull("imageHeight", imageHeight)
       };
 
     public static OBSVoidRequest SaveSourceScreenshot(ID sourceID, string imageFormat, string imageFilePath,
@@ -38,14 +38,14 @@ public static partial class OBSRequests
       => new OBSVoidRequest
       {
         RequestType = "SaveSourceScreenshot",
-        RequestData = (JsonObject)new JsonObject
+        RequestData = new JsonObject
         {
           [$"source{sourceID.Key}"] = sourceID.Value,
           ["imageFormat"] = imageFormat,
           ["imageFilePath"] = imageFilePath,
           ["imageCompressionQuality"] = imageCompressionQuality
-        }.WithValueIf("imageWidth", imageWidth, imageWidth != null)
-        .WithValueIf("imageHeight", imageHeight, imageHeight != null)
+        }.WithValueIfNotNull("imageWidth", imageWidth)
+        .WithValueIfNotNull("imageHeight", imageHeight)
       };
   }
 }

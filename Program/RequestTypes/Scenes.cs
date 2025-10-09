@@ -99,7 +99,7 @@ public static partial class OBSRequests
       => new OBSVoidRequest
       {
         RequestType = "SetSceneTransitionOverride",
-        RequestData = (JsonObject)new JsonObject
+        RequestData = new JsonObject
         {
           [$"scene{sceneID.Key}"] = sceneID.Value
         }.WithValueIfNotNull("transitionName", transitionName)

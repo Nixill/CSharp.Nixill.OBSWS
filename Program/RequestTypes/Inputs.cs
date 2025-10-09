@@ -12,7 +12,7 @@ public static partial class OBSRequests
       {
         CastResult = ResultCasts.List(o => new OBSInput((JsonObject)o)),
         RequestType = "GetInputList",
-        RequestData = (JsonObject)new JsonObject().WithValueIf("inputKind", inputKind, inputKind != null)
+        RequestData = new JsonObject().WithValueIfNotNull("inputKind", inputKind)
       };
 
     public static OBSRequest<OBSListResult<string>> GetInputKindList(bool unversioned = false)
@@ -36,7 +36,7 @@ public static partial class OBSRequests
       {
         CastResult = (r, d) => new NewInput(r, d),
         RequestType = "CreateInput",
-        RequestData = (JsonObject)new JsonObject
+        RequestData = new JsonObject
         {
           [$"scene{sceneID.Key}"] = sceneID.Value,
           ["inputName"] = inputName,
