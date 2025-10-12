@@ -49,7 +49,18 @@ public static partial class OBSRequests
         }.AddID(sceneID, "scene")
       };
 
-    // SetSceneItemTransform
+    public static OBSVoidRequest SetSceneItemTransform(ID sceneID, int sceneItemID,
+      SceneItemTransformSetter sceneItemTransform)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetSceneItemTransform",
+        RequestData = new JsonObject
+        {
+          ["sceneItemId"] = sceneItemID,
+          ["sceneItemTransform"] = sceneItemTransform.ToJson()
+        }.AddID(sceneID, "scene")
+      };
+
     // GetSceneItemEnabled
 
     public static OBSVoidRequest SetSceneItemEnabled(ID sceneID, int sceneItemID, bool sceneItemEnabled)
@@ -108,6 +119,94 @@ public class SceneItem
     SourceName = (string)o.GetNode("sourceName")!;
     SourceType = SourceTypes.ForIdentifierValue((string)o.GetNode("sourceType")!);
     SourceUuid = (string)o.GetNode("sourceUuid")!;
+  }
+}
+
+public class SceneItemTransformSetter
+{
+  public Alignment? Alignment { get; init; } = null;
+  public Alignment? BoundsAlignment { get; init; } = null;
+  public double? BoundsHeight { get; init; } = null;
+  public BoundingBoxType? BoundsType { get; init; } = null;
+  public double? BoundsWidth { get; init; } = null;
+  public int? CropBottom { get; init; } = null;
+  public int? CropLeft { get; init; } = null;
+  public int? CropRight { get; init; } = null;
+  public bool? CropToBounds { get; init; } = null;
+  public int? CropTop { get; init; } = null;
+  public double? Height { get; init; } = null;
+  public double? PositionX { get; init; } = null;
+  public double? PositionY { get; init; } = null;
+  public double? Rotation { get; init; } = null;
+  public double? ScaleX { get; init; } = null;
+  public double? ScaleY { get; init; } = null;
+  public double? Width { get; init; } = null;
+
+  public SceneItemTransformSetter() { }
+
+  public SceneItemTransformSetter(JsonObject o)
+  {
+    Alignment = (Alignment)(int)o.GetNode("alignment");
+    BoundsAlignment = (Alignment)(int)o.GetNode("boundsAlignment");
+    BoundsHeight = (double)o.GetNode("boundsHeight");
+    BoundsType = BoundingBoxTypes.ForIdentifierValue((string)o.GetNode("boundsType")!);
+    BoundsWidth = (double)o.GetNode("boundsWidth");
+    CropBottom = (int)o.GetNode("cropBottom");
+    CropLeft = (int)o.GetNode("cropLeft");
+    CropRight = (int)o.GetNode("cropRight");
+    CropToBounds = (bool)o.GetNode("cropToBounds");
+    CropTop = (int)o.GetNode("cropTop");
+    Height = (double)o.GetNode("height");
+    PositionX = (double)o.GetNode("positionX");
+    PositionY = (double)o.GetNode("positionY");
+    Rotation = (double)o.GetNode("rotation");
+    ScaleX = (double)o.GetNode("scaleX");
+    ScaleY = (double)o.GetNode("scaleY");
+    Width = (double)o.GetNode("width");
+  }
+
+  public SceneItemTransformSetter(SceneItemTransform sit)
+  {
+    Alignment = sit.Alignment;
+    BoundsAlignment = sit.BoundsAlignment;
+    BoundsHeight = sit.BoundsHeight;
+    BoundsType = sit.BoundsType;
+    BoundsWidth = sit.BoundsWidth;
+    CropBottom = sit.CropBottom;
+    CropLeft = sit.CropLeft;
+    CropRight = sit.CropRight;
+    CropToBounds = sit.CropToBounds;
+    CropTop = sit.CropTop;
+    Height = sit.Height;
+    PositionX = sit.PositionX;
+    PositionY = sit.PositionY;
+    Rotation = sit.Rotation;
+    ScaleX = sit.ScaleX;
+    ScaleY = sit.ScaleY;
+    Width = sit.Width;
+  }
+
+  public JsonObject ToJson()
+  {
+    JsonObject obj = [];
+    if (Alignment != null) obj["alignment"] = (int)Alignment;
+    if (BoundsAlignment != null) obj["boundsAlignment"] = (int)BoundsAlignment;
+    if (BoundsHeight != null) obj["boundsHeight"] = BoundsHeight;
+    if (BoundsType != null) obj["boundsType"] = BoundingBoxTypes.GetIdentifierValue(BoundsType.Value);
+    if (BoundsWidth != null) obj["boundsWidth"] = BoundsWidth;
+    if (CropBottom != null) obj["cropBottom"] = CropBottom;
+    if (CropLeft != null) obj["cropLeft"] = CropLeft;
+    if (CropRight != null) obj["cropRight"] = CropRight;
+    if (CropToBounds != null) obj["cropToBounds"] = CropToBounds;
+    if (CropTop != null) obj["cropTop"] = CropTop;
+    if (Height != null) obj["height"] = Height;
+    if (PositionX != null) obj["positionX"] = PositionX;
+    if (PositionY != null) obj["positionY"] = PositionY;
+    if (Rotation != null) obj["rotation"] = Rotation;
+    if (ScaleX != null) obj["scaleX"] = ScaleX;
+    if (ScaleY != null) obj["scaleY"] = ScaleY;
+    if (Width != null) obj["width"] = Width;
+    return obj;
   }
 }
 

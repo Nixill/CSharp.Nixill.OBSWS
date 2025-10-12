@@ -88,6 +88,9 @@ public static partial class OBSRequests
         }
       };
 
+    public static OBSVoidRequest SetInputSetting(ID inputID, string setting, JsonNode value, bool overlay = true)
+      => SetInputSettings(inputID, new JsonObject { [setting] = value }, overlay);
+
     public static OBSVoidRequest SetInputSettings(ID inputID, JsonObject inputSettings, bool overlay = true)
       => new OBSVoidRequest
       {

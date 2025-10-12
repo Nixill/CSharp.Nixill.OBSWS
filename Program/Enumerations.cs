@@ -343,6 +343,22 @@ public static class DeinterlaceFieldOrders
     => StringValueAttribute.FindValue<DeinterlaceFieldOrder>(value);
 }
 
+public enum VideoMixType
+{
+  [StringValue("OBS_WEBSOCKET_VIDEO_MIX_TYPE_PREVIEW")] Preview,
+  [StringValue("OBS_WEBSOCKET_VIDEO_MIX_TYPE_PROGRAM")] Program,
+  [StringValue("OBS_WEBSOCKET_VIDEO_MIX_TYPE_MULTIVIEW")] Multiview
+}
+
+public static class VideoMixTypes
+{
+  public static string GetIdentifierValue(this VideoMixType mode)
+    => StringValueAttribute.GetValue(mode);
+
+  public static VideoMixType ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<VideoMixType>(value);
+}
+
 [AttributeUsage(AttributeTargets.Field)]
 public class StringValueAttribute : Attribute
 {

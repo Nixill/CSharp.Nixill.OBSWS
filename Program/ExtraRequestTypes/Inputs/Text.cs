@@ -8,10 +8,16 @@ public static partial class OBSExtraRequests
   {
     public static class Text
     {
-      public static OBSVoidRequest SetInputText(ID id, string text)
+      public static OBSVoidRequest SetText(ID id, string text)
         => OBSRequests.Inputs.SetInputSettings(id, new JsonObject
         {
           ["text"] = text
+        });
+
+      public static OBSVoidRequest SetOutlineColor(ID id, uint colorABGR)
+        => OBSRequests.Inputs.SetInputSettings(id, new JsonObject
+        {
+          ["outline_color"] = colorABGR
         });
     }
   }

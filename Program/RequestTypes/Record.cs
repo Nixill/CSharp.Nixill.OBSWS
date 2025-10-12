@@ -30,7 +30,7 @@ public class RecordStatus : OBSRequestResult
   public required bool Paused { get; init; }
   public required string Timecode { get; init; }
   public required double Duration { get; init; }
-  public required int Bytes { get; init; }
+  public required long Bytes { get; init; }
 
   public RecordStatus() { }
 
@@ -41,6 +41,6 @@ public class RecordStatus : OBSRequestResult
     Paused = (bool)obj.GetNode("outputPaused");
     Timecode = (string)obj.GetNode("outputTimecode")!;
     Duration = (double)obj.GetNode("outputDuration");
-    Bytes = (int)obj.GetNode("outputBytes");
+    Bytes = (long)obj.GetNode("outputBytes");
   }
 }
