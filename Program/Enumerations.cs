@@ -115,6 +115,8 @@ public enum EventSubscription
 }
 
 [Flags]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated",
+  Justification = "Duplicate values are intentional.")]
 public enum SubscriptionRequired
 {
   ExitStarted = EventSubscription.General,
@@ -194,6 +196,39 @@ public static class OBSMediaInputActions
 
   public static OBSMediaInputAction ForIdentifierValue(string value)
     => StringValueAttribute.FindValue<OBSMediaInputAction>(value);
+}
+
+public enum OBSMediaState
+{
+  [StringValue("OBS_MEDIA_STATE_NONE")] None,
+  [StringValue("OBS_MEDIA_STATE_PLAYING")] Playing,
+  [StringValue("OBS_MEDIA_STATE_OPENING")] Opening,
+  [StringValue("OBS_MEDIA_STATE_BUFFERING")] Buffering,
+  [StringValue("OBS_MEDIA_STATE_PAUSED")] Paused,
+  [StringValue("OBS_MEDIA_STATE_STOPPED")] Stopped,
+  [StringValue("OBS_MEDIA_STATE_ENDED")] Ended,
+  [StringValue("OBS_MEDIA_STATE_ERROR")] Error
+}
+
+public static class OBSMediaStates
+{
+  public static string GetIdentifierValue(this OBSMediaState state)
+    => StringValueAttribute.GetValue(state);
+
+  public static bool IsPlaying(this OBSMediaState state)
+    => state == OBSMediaState.Playing;
+
+  public static bool IsWaiting(this OBSMediaState state)
+    => state switch { OBSMediaState.Opening or OBSMediaState.Buffering => true, _ => false };
+
+  public static bool IsStopped(this OBSMediaState state)
+    => state switch { OBSMediaState.Stopped or OBSMediaState.Ended or OBSMediaState.Error => true, _ => false };
+
+  public static bool IsPaused(this OBSMediaState state)
+    => state == OBSMediaState.Paused;
+
+  public static OBSMediaState ForIdentifierValue(string value)
+    => StringValueAttribute.FindValue<OBSMediaState>(value);
 }
 
 public enum OBSOutputState

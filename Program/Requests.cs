@@ -26,6 +26,7 @@ public partial class OBSClient
 
     WaitingResponses[id] = new() { OriginalRequest = request, ResponseCompletionSource = dataTask };
     Client.Send(jsonRequest.ToString());
+    Logger?.LogTrace("Sent {RequestType} request with ID {RequestID}", request.RequestType, request.RequestID);
 
     if (timeout == -1)
     {
@@ -66,6 +67,8 @@ public partial class OBSClient
     // a complaint of "received a response with an unqueued ID".
     WaitingResponses[id] = new OBSRequestCompletionSource() { OriginalRequest = request, ResponseCompletionSource = new() };
     Client.Send(requestJson.ToString());
+    Logger?.LogTrace("Sent {RequestType} request with ID {RequestID} (with no wait for a response)",
+      request.RequestType, request.RequestID);
 
     return Task.CompletedTask;
   }
@@ -76,9 +79,9 @@ public partial class OBSClient
     // JsonObject requestStatus = (JsonObject)data["requestStatus"]!;
     // bool isSuccessful = (bool)requestStatus["result"]!;
 
-    if (WaitingResponses.ContainsKey(requestId))
+    if (WaitingResponses.TryGetValue(requestId, out OBSRequestCompletionSource responseTask))
     {
-      var responseTask = WaitingResponses[requestId];
+      Logger?.LogTrace("Received response to request {RequestID} of type {RequestType}.", requestId, data["requestType"]);
       WaitingResponses.TryRemove(new(requestId, responseTask));
 
       OBSRequestResponse response = new OBSRequestResponse(responseTask.OriginalRequest, data);
@@ -87,7 +90,7 @@ public partial class OBSClient
     }
     else
     {
-      Logger?.LogWarning($"Received response to request {requestId} of type {data["requestType"]}, which wasn't queued for a response.");
+      Logger?.LogWarning("Received response to request {RequestId} of type {RequestType}, which wasn't queued for a response.", requestId, data["requestType"]);
     }
   }
 
@@ -123,6 +126,7 @@ public partial class OBSClient
 
     WaitingBatchResponses[requestBatch.ID] = new OBSRequestBatchCompletionSource { OriginalRequest = requestBatch, ResponseCompletionSource = dataTask };
     Client.Send(request.ToString());
+    Logger?.LogTrace("Sent batch request with ID {RequestID}", requestBatch.ID);
 
     if (dataTask.Task.Wait(TimeSpan.FromSeconds(timeout) + TimeSpan.FromMilliseconds(millisTimeout)
       + TimeSpan.FromSeconds(framesTimeout / 30)))
@@ -156,6 +160,7 @@ public partial class OBSClient
 
     WaitingBatchResponses[id] = new OBSRequestBatchCompletionSource { OriginalRequest = batchData, ResponseCompletionSource = dataTask };
     Client.Send(request.ToString());
+    Logger?.LogTrace("Sent batch request with ID {RequestID} (with no wait for a response)", id);
   }
 
   public void HandleBatchResponse(JsonObject data)
@@ -165,13 +170,14 @@ public partial class OBSClient
 
     if (WaitingBatchResponses.ContainsKey(requestId))
     {
+      Logger?.LogTrace("Received response to batch request {requestId}.", requestId);
       var response = WaitingBatchResponses[requestId];
       WaitingBatchResponses.TryRemove(new(requestId, response));
       response.ResponseCompletionSource.SetResult(new OBSRequestBatchResult(response.OriginalRequest.Requests, results));
     }
     else
     {
-      Logger?.LogWarning($"Received response to batch request {requestId}, which wasn't queued for a response.");
+      Logger?.LogWarning("Received response to batch request {requestId}, which wasn't queued for a response.", requestId);
     }
   }
 }

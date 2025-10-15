@@ -26,7 +26,7 @@ public partial class OBSEvents
     // Filters = new(client);
     // SceneItems = new(client);
     Outputs = new(client);
-    // MediaInputs = new(client);
+    MediaInputs = new(client);
     // UI = new(client);
     // HighVolume = new(client);
   }
@@ -104,11 +104,11 @@ public partial class OBSEvents
         // case "ReplayBufferSaved":
         Outputs.Handle(eventName, eventData);
         break;
-      // case "MediaInputPlaybackStarted":
-      // case "MediaInputPlaybackEnded":
-      // case "MediaInputActionTriggered":
-      //   MediaInputs.Handle(eventName, eventData);
-      //   break;
+      case "MediaInputPlaybackStarted":
+      case "MediaInputPlaybackEnded":
+      case "MediaInputActionTriggered":
+        MediaInputs.Handle(eventName, eventData);
+        break;
       // case "StudioModeStateChanged":
       // case "ScreenshotSaved":
       //   UI.Handle(eventName, eventData);
