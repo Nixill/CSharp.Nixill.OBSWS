@@ -59,7 +59,7 @@ public class OutputStateChanged : OBSEventArgs
 {
   public required bool Active { get; init; }
   public required OBSOutputState State { get; init; }
-  public string? Path { get; init; }
+  // public string? Path { get; init; }
 
   public OutputStateChanged() { }
 
@@ -68,6 +68,6 @@ public class OutputStateChanged : OBSEventArgs
   {
     Active = (bool)GetRequiredNode("outputActive");
     State = OBSOutputStates.ForIdentifierValue((string)GetRequiredNode("outputState")!);
-    Path = (string?)obj["outputPath"];
+    // Path = (string?)obj["outputPath"];
   }
 }
