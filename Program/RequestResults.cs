@@ -150,6 +150,8 @@ public static class ResultCasts
   public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<double>> Double = SingleValue(n => (double)n);
   public static readonly Func<OBSRequest, JsonObject, OBSSingleValueResult<double?>> NullableDouble = SingleValue(n => (double?)n);
 
+  public static Func<OBSRequest, JsonObject, OBSSingleValueResult<T>> Enum<T>(Func<string, T> enumFunc) => ResultCasts.SingleValue(n => enumFunc((string)n!));
+
   public static Func<OBSRequest, JsonObject, OBSListResult<T>> List<T>(Func<JsonNode, T> innerCastFunc)
     => (req, obj) => new OBSListResult<T>(req, obj, innerCastFunc);
 

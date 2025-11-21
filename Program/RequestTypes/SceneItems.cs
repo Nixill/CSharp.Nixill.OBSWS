@@ -18,7 +18,16 @@ public static partial class OBSRequests
         }
       };
 
-    // GetGroupSceneItemList
+    public static OBSRequest<OBSListResult<SceneItem>> GetGroupSceneItemList(ID groupID)
+      => new OBSRequest<OBSListResult<SceneItem>>
+      {
+        CastResult = ResultCasts.List(o => new SceneItem((JsonObject)o)),
+        RequestType = "GetGroupSceneItemList",
+        RequestData = new JsonObject
+        {
+          [$"scene{groupID.Key}"] = groupID.Value
+        }
+      };
 
     public static OBSRequest<OBSSingleValueResult<int>> GetSceneItemId(ID sceneID, string sourceName, int searchOffset = 0)
       => new OBSRequest<OBSSingleValueResult<int>>
@@ -33,10 +42,55 @@ public static partial class OBSRequests
         }
       };
 
-    // GetSceneItemSource
-    // CreateSceneItem
-    // RemoveSceneItem
-    // DuplicateSceneItem
+    public static OBSRequest<SceneItemSource> GetSceneItemSource(ID sceneID, int sceneItemID)
+      => new OBSRequest<SceneItemSource>
+      {
+        CastResult = (r, o) => new SceneItemSource(r, o),
+        RequestType = "GetSceneItemSource",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["sceneItemId"] = sceneItemID
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<int>> CreateSceneItem(ID sceneID, ID sourceID, bool sceneItemEnabled = true)
+      => new OBSRequest<OBSSingleValueResult<int>>
+      {
+        CastResult = ResultCasts.Int,
+        RequestType = "CreateSceneItem",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          [$"source{sourceID.Key}"] = sourceID.Value,
+          ["sceneItemEnabled"] = sceneItemEnabled
+        }
+      };
+
+    public static OBSVoidRequest RemoveSceneItem(ID sceneID, int sceneItemID)
+      => new OBSVoidRequest
+      {
+        RequestType = "RemoveSceneItem",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["sceneItemId"] = sceneItemID
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<int>> DuplicateSceneItem(ID sceneID, int sceneItemID,
+      ID? destinationSceneID = null)
+      => new OBSRequest<OBSSingleValueResult<int>>
+      {
+        CastResult = ResultCasts.Int,
+        RequestType = "DuplicateSceneItem",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["sceneItemId"] = sceneItemID,
+          [$"destinationScene{destinationSceneID?.Key ?? sceneID.Key}"] = destinationSceneID?.Value ?? sceneID.Value
+        }
+      };
 
     public static OBSRequest<OBSSingleValueResult<SceneItemTransform>> GetSceneItemTransform(ID sceneID, int sceneItemID)
       => new OBSRequest<OBSSingleValueResult<SceneItemTransform>>
@@ -61,7 +115,16 @@ public static partial class OBSRequests
         }.AddID(sceneID, "scene")
       };
 
-    // GetSceneItemEnabled
+    public static OBSRequest<OBSSingleValueResult<bool>> GetSceneItemEnabled(ID sceneID, int sceneItemID)
+      => new OBSRequest<OBSSingleValueResult<bool>>
+      {
+        CastResult = ResultCasts.Bool,
+        RequestType = "GetSceneItemEnabled",
+        RequestData = new JsonObject
+        {
+          ["sceneItemId"] = sceneItemID
+        }.AddID(sceneID, "scene")
+      };
 
     public static OBSVoidRequest SetSceneItemEnabled(ID sceneID, int sceneItemID, bool sceneItemEnabled)
       => new OBSVoidRequest
@@ -75,12 +138,74 @@ public static partial class OBSRequests
         }
       };
 
-    // GetSceneItemLocked
-    // SetSceneItemLocked
-    // GetSceneItemIndex
-    // SetSceneItemIndex
-    // GetSceneItemBlendMode
-    // SetSceneItemBlendMode
+    public static OBSRequest<OBSSingleValueResult<bool>> GetSceneItemLocked(ID sceneID, int sceneItemID)
+      => new OBSRequest<OBSSingleValueResult<bool>>
+      {
+        CastResult = ResultCasts.Bool,
+        RequestType = "GetSceneItemLocked",
+        RequestData = new JsonObject
+        {
+          ["sceneItemId"] = sceneItemID
+        }.AddID(sceneID, "scene")
+      };
+
+    public static OBSVoidRequest SetSceneItemLocked(ID sceneID, int sceneItemID, bool sceneItemLocked)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetSceneItemLocked",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["sceneItemId"] = sceneItemID,
+          ["sceneItemLocked"] = sceneItemLocked
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<int>> GetSceneItemIndex(ID sceneID, int sceneItemID)
+      => new OBSRequest<OBSSingleValueResult<int>>
+      {
+        CastResult = ResultCasts.Int,
+        RequestType = "GetSceneItemIndex",
+        RequestData = new JsonObject
+        {
+          ["sceneItemId"] = sceneItemID
+        }.AddID(sceneID, "scene")
+      };
+
+    public static OBSVoidRequest SetSceneItemIndex(ID sceneID, int sceneItemID, int sceneItemIndex)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetSceneItemIndex",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["sceneItemId"] = sceneItemID,
+          ["sceneItemIndex"] = sceneItemIndex
+        }
+      };
+
+    public static OBSRequest<OBSSingleValueResult<SceneItemBlendMode>> GetSceneItemBlendMode(ID sceneID, int sceneItemID)
+      => new OBSRequest<OBSSingleValueResult<SceneItemBlendMode>>
+      {
+        CastResult = ResultCasts.Enum(SceneItemBlendModes.ForIdentifierValue),
+        RequestType = "GetSceneItemBlendMode",
+        RequestData = new JsonObject
+        {
+          ["sceneItemId"] = sceneItemID
+        }.AddID(sceneID, "scene")
+      };
+
+    public static OBSVoidRequest SetSceneItemBlendMode(ID sceneID, int sceneItemID, SceneItemBlendMode sceneItemBlendMode)
+      => new OBSVoidRequest
+      {
+        RequestType = "SetSceneItemBlendMode",
+        RequestData = new JsonObject
+        {
+          [$"scene{sceneID.Key}"] = sceneID.Value,
+          ["sceneItemId"] = sceneItemID,
+          ["sceneItemBlendMode"] = sceneItemBlendMode.GetIdentifierValue()
+        }
+      };
   }
 }
 
@@ -290,4 +415,20 @@ public static class AlignmentExtensions
   public static bool IsVerticalCenter(this Alignment a) => a.IsCenter();
   public static bool IsTop(this Alignment a) => a.Vertical() == Alignment.Top;
   public static bool IsBottom(this Alignment a) => a.Vertical() == Alignment.Bottom;
+}
+
+public class SceneItemSource : OBSRequestResult
+{
+  public required string Name { get; init; }
+  public required string Uuid { get; init; }
+  public Guid Guid => Guid.Parse(Uuid);
+
+  public SceneItemSource() { }
+
+  [SetsRequiredMembers]
+  public SceneItemSource(OBSRequest req, JsonObject obj) : base(req, obj)
+  {
+    Name = (string)obj["sourceName"]!;
+    Uuid = (string)obj["sourceUuid"]!;
+  }
 }
